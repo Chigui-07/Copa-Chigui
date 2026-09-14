@@ -99,18 +99,14 @@
   function renderTeamRow(team, hostId) {
     var row = document.createElement("div");
     row.className = "team-row";
-
     var main = document.createElement("div");
     main.className = "team-main";
-
     var flag = document.createElement("span");
     flag.className = "flag";
     flag.textContent = team.flag;
-
     var name = document.createElement("span");
     name.className = "team-name";
     name.textContent = team.name + starsFor(team);
-
     main.appendChild(flag);
     main.appendChild(name);
 
@@ -125,7 +121,6 @@
     var points = document.createElement("span");
     points.className = "points";
     points.textContent = team.points + " pts";
-
     row.appendChild(main);
     row.appendChild(points);
     return row;
@@ -136,12 +131,10 @@
     universe.cup.groups.forEach(function (group) {
       var card = document.createElement("article");
       card.className = "group-card";
-
       var title = document.createElement("h3");
       title.className = "group-title";
       title.textContent = group.name;
       card.appendChild(title);
-
       group.teams.forEach(function (teamRef) {
         var team = getTeam(universe.cup, teamRef.id) || teamRef;
         card.appendChild(renderTeamRow(team, universe.cup.hostId));
@@ -166,7 +159,6 @@
     table.className = "standings-table";
     var thead = document.createElement("thead");
     var headRow = document.createElement("tr");
-
     ["#", "Selección", "PJ", "G", "E", "P", "GF", "GC", "DG", "Pts", "Rank"].forEach(function (label) {
       var th = document.createElement("th");
       th.textContent = label;
@@ -182,7 +174,6 @@
       if (index < 2) {
         row.className = "qualifying-row";
       }
-
       row.appendChild(createCell(String(index + 1), "position-cell"));
       var teamCell = document.createElement("td");
       teamCell.className = "standing-team";
@@ -199,7 +190,6 @@
       row.appendChild(createCell((team ? team.points : standing.worldPoints) + " pts", "world-points-cell"));
       tbody.appendChild(row);
     });
-
     table.appendChild(tbody);
     wrapper.appendChild(table);
     return wrapper;
@@ -211,17 +201,29 @@
     renderUniverse(currentUniverse);
   }
 
+  function numberInput(label, value) {
+    var input = document.createElement("input");
+    input.type = "number";
+    input.min = "0";
+    input.max = "99";
+    input.inputMode = "numeric";
+    input.className = "goal-input";
+    input.setAttribute("aria-label", label);
+    if (value !== null && typeof value !== "undefined") {
+      input.value = value;
+    }
+    return input;
+  }
+
   function renderMatch(match, cup) {
     var home = getTeam(cup, match.homeId);
     var away = getTeam(cup, match.awayId);
     var locked = Boolean(cup.groupStageLocked);
     var row = document.createElement("div");
     row.className = "match-row" + (match.completed ? " completed-match" : "");
-
     var homeLabel = document.createElement("div");
     homeLabel.className = "match-team home-team";
     homeLabel.textContent = home.flag + " " + home.name;
-
     var score = document.createElement("div");
     score.className = "score-entry";
     var homeInput = numberInput("Goles de " + home.name, match.completed ? match.homeGoals : null);
@@ -234,11 +236,9 @@
     score.appendChild(homeInput);
     score.appendChild(separator);
     score.appendChild(awayInput);
-
     var awayLabel = document.createElement("div");
     awayLabel.className = "match-team away-team";
     awayLabel.textContent = away.flag + " " + away.name;
-
     var actions = document.createElement("div");
     actions.className = "match-actions";
 
@@ -291,16 +291,13 @@
       if (index === 0) {
         details.open = true;
       }
-
       var summary = document.createElement("summary");
       summary.className = "stage-group-summary";
       summary.textContent = group.name;
       details.appendChild(summary);
-
       var content = document.createElement("div");
       content.className = "stage-group-content";
       content.appendChild(renderStandings(group, universe.cup));
-
       var matchdays = document.createElement("div");
       matchdays.className = "matchdays";
       group.matchdays.forEach(function (matchday) {
@@ -314,7 +311,6 @@
         });
         matchdays.appendChild(day);
       });
-
       content.appendChild(matchdays);
       details.appendChild(content);
       groupStageList.appendChild(details);
@@ -324,13 +320,12 @@
   function renderQualifiedTeams(universe) {
     var qualified = window.CopaChiguiTournament.getQualifiedTeams(universe.cup);
     qualifiedGrid.innerHTML = "";
-
     if (!qualified.length) {
       qualifiedSection.classList.add("hidden");
       return;
     }
-
     qualifiedSection.classList.remove("hidden");
+
     for (var i = 0; i < qualified.length; i += 2) {
       var first = qualified[i];
       var second = qualified[i + 1];
@@ -339,7 +334,6 @@
       var title = document.createElement("h3");
       title.textContent = first.group;
       card.appendChild(title);
-
       [first, second].forEach(function (entry) {
         var row = document.createElement("div");
         row.className = "qualified-row";
@@ -365,27 +359,12 @@
     createRoundOf32Button.textContent = created ? "✅ Dieciseisavos creados" : "🏆 Crear dieciseisavos de final";
   }
 
-  function numberInput(label, value) {
-    var input = document.createElement("input");
-    input.type = "number";
-    input.min = "0";
-    input.max = "99";
-    input.inputMode = "numeric";
-    input.className = "goal-input";
-    input.setAttribute("aria-label", label);
-    if (value !== null && typeof value !== "undefined") {
-      input.value = value;
-    }
-    return input;
-  }
-
   function renderKnockoutMatch(match, cup, index) {
     var home = getTeam(cup, match.homeId);
     var away = getTeam(cup, match.awayId);
     var locked = window.CopaChiguiTournament.isRoundLocked(cup, match.roundKey);
     var card = document.createElement("article");
     card.className = "knockout-card" + (match.completed ? " completed-knockout" : "");
-
     var heading = document.createElement("div");
     heading.className = "knockout-card-heading";
     heading.textContent = match.roundKey === "final" ? "Gran final" : (match.roundKey === "thirdPlace" ? "Tercer puesto" : "Partido " + (index + 1));
@@ -495,7 +474,6 @@
       }
       card.appendChild(winnerNote);
     }
-
     return card;
   }
 
@@ -516,7 +494,6 @@
       config.section.classList.add("hidden");
       return;
     }
-
     config.section.classList.remove("hidden");
     config.grid.innerHTML = "";
     matches.forEach(function (match, index) {
@@ -544,7 +521,6 @@
       finalsSection.classList.add("hidden");
       return;
     }
-
     finalsSection.classList.remove("hidden");
     thirdPlaceGrid.innerHTML = "";
     finalGrid.innerHTML = "";
@@ -566,7 +542,6 @@
       championSection.classList.add("hidden");
       return;
     }
-
     championSection.classList.remove("hidden");
     championDisplay.textContent = podium.champion.flag + " " + podium.champion.name + starsFor(podium.champion);
     podiumDisplay.textContent = "🥇 " + podium.champion.name + " · 🥈 " + podium.runnerUp.name + " · 🥉 " + podium.third.name;
@@ -577,7 +552,6 @@
     groupProgressBadge.textContent = progress.completed + " / " + progress.total + " partidos";
     simulateNextButton.disabled = progress.finished || universe.cup.groupStageLocked;
     simulateAllButton.disabled = progress.finished || universe.cup.groupStageLocked;
-
     if (universe.cup.groupStageLocked) {
       simulateNextButton.textContent = "🔒 Fase cerrada";
       simulateAllButton.textContent = "🔒 Eliminatorias iniciadas";
@@ -593,14 +567,12 @@
   function renderUniverse(universe) {
     currentUniverse = universe;
     window.CopaChiguiTournament.ensureCupData(universe.cup);
-
     setupScreen.classList.add("hidden");
     tournamentScreen.classList.remove("hidden");
     universeTitle.textContent = universe.name;
     playersLabel.textContent = universe.playerName + " vs " + universe.rivalName;
     hostDisplay.textContent = universe.cup.host.flag + " " + universe.cup.host.name;
     participantCount.textContent = universe.cup.participants.length + " equipos";
-
     renderDrawGroups(universe);
     renderProgress(universe);
     renderGroupStage(universe);
@@ -642,8 +614,7 @@
       return;
     }
     var pending = progress.total - progress.completed;
-    var confirmation = window.confirm("¿Simular los " + pending + " partidos pendientes de " + label + "?");
-    if (!confirmation) {
+    if (!window.confirm("¿Simular los " + pending + " partidos pendientes de " + label + "?")) {
       return;
     }
     try {
@@ -655,10 +626,7 @@
   }
 
   function createNextRound(createFunction, message) {
-    if (!currentUniverse) {
-      return;
-    }
-    if (!window.confirm(message)) {
+    if (!currentUniverse || !window.confirm(message)) {
       return;
     }
     try {
@@ -686,8 +654,7 @@
     if (!currentUniverse) {
       return;
     }
-    var confirmation = window.confirm("¿Quieres repetir el sorteo de la Copa Chigui #1? El sorteo y todos los resultados actuales serán reemplazados.");
-    if (!confirmation) {
+    if (!window.confirm("¿Quieres repetir el sorteo de la Copa Chigui #1? El sorteo y todos los resultados actuales serán reemplazados.")) {
       return;
     }
     currentUniverse.cup = window.CopaChiguiTournament.generateFirstCup(window.COPA_CHIGUI_TEAMS);
@@ -734,7 +701,7 @@
     simulateWholeRound("quarterfinals", "cuartos");
   });
   roundConfigs.semifinals.simulateButton.addEventListener("click", function () {
-    simulateWholeRound("semifinal", "semifinales");
+    simulateWholeRound("semifinals", "semifinales");
   });
 
   roundConfigs.roundOf32.createButton.addEventListener("click", function () {
@@ -757,10 +724,7 @@
     var third = window.CopaChiguiTournament.getRoundProgress(currentUniverse.cup, "thirdPlace");
     var finalProgress = window.CopaChiguiTournament.getRoundProgress(currentUniverse.cup, "final");
     var pending = (third.total - third.completed) + (finalProgress.total - finalProgress.completed);
-    if (!pending) {
-      return;
-    }
-    if (!window.confirm("¿Simular los " + pending + " partidos finales pendientes?")) {
+    if (!pending || !window.confirm("¿Simular los " + pending + " partidos finales pendientes?")) {
       return;
     }
     window.CopaChiguiTournament.simulateAllPendingRound(currentUniverse.cup, "thirdPlace");
