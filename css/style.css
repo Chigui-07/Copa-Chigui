@@ -130,7 +130,8 @@ input:focus {
 }
 
 .primary-button,
-.secondary-button {
+.secondary-button,
+.match-save-button {
   border: 0;
   border-radius: 14px;
   cursor: pointer;
@@ -255,8 +256,179 @@ input:focus {
   color: #ffd978;
 }
 
+.group-stage-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.stage-group {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: #0f172a;
+}
+
+.stage-group-summary {
+  cursor: pointer;
+  padding: 14px 16px;
+  background: var(--panel-soft);
+  font-weight: 900;
+  user-select: none;
+}
+
+.stage-group-summary:hover {
+  background: #202b48;
+}
+
+.stage-group-content {
+  display: grid;
+  gap: 18px;
+  padding: 16px;
+}
+
+.table-scroll {
+  overflow-x: auto;
+  border: 1px solid rgba(42, 53, 82, 0.7);
+  border-radius: 12px;
+}
+
+.standings-table {
+  width: 100%;
+  min-width: 780px;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.standings-table th,
+.standings-table td {
+  padding: 9px 10px;
+  text-align: center;
+  border-bottom: 1px solid rgba(42, 53, 82, 0.55);
+  white-space: nowrap;
+}
+
+.standings-table th {
+  background: #101a30;
+  color: var(--muted);
+  font-size: 0.74rem;
+  text-transform: uppercase;
+}
+
+.standings-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.standing-team {
+  text-align: left !important;
+  font-weight: 800;
+}
+
+.position-cell,
+.table-points-cell {
+  font-weight: 900;
+}
+
+.world-points-cell {
+  color: var(--accent);
+  font-weight: 800;
+}
+
+.qualifying-row {
+  background: rgba(89, 210, 139, 0.07);
+}
+
+.matchdays {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.matchday-card {
+  border: 1px solid rgba(42, 53, 82, 0.8);
+  border-radius: 14px;
+  background: #0c1425;
+  padding: 12px;
+}
+
+.matchday-card h4 {
+  margin: 0 0 10px;
+  color: var(--accent);
+}
+
+.match-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0;
+  border-top: 1px solid rgba(42, 53, 82, 0.55);
+}
+
+.match-row:first-of-type {
+  border-top: 0;
+}
+
+.match-team {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.home-team {
+  text-align: right;
+}
+
+.away-team {
+  text-align: left;
+}
+
+.score-entry {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.goal-input {
+  width: 46px;
+  padding: 8px 5px;
+  border-radius: 9px;
+  text-align: center;
+  font-weight: 900;
+}
+
+.score-separator {
+  color: var(--muted);
+  font-weight: 900;
+}
+
+.match-save-button {
+  grid-column: 1 / -1;
+  padding: 8px 10px;
+  background: var(--panel-soft);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.match-save-button:hover {
+  border-color: var(--accent);
+}
+
+.completed-match .match-save-button {
+  color: var(--accent);
+}
+
 .hidden {
   display: none;
+}
+
+@media (max-width: 980px) {
+  .matchdays {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 900px) {
@@ -295,5 +467,21 @@ input:focus {
 
   .secondary-button {
     width: 100%;
+  }
+
+  .stage-group-content {
+    padding: 10px;
+  }
+
+  .match-row {
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  }
+
+  .match-team {
+    font-size: 0.78rem;
+  }
+
+  .goal-input {
+    width: 42px;
   }
 }
