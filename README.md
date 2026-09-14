@@ -211,11 +211,11 @@ Copa-Chigui/
 
 ## 🗺️ Ruta de desarrollo
 
-1. Crear base inicial de selecciones.
-2. Crear pantalla de nuevo universo.
-3. Elegir anfitrión y 64 participantes aleatorios.
-4. Sortear 16 grupos.
-5. Crear jornadas y tablas.
+1. ✅ Crear base inicial de selecciones.
+2. ✅ Crear pantalla de nuevo universo.
+3. ✅ Elegir anfitrión y 64 participantes aleatorios.
+4. ✅ Sortear 16 grupos.
+5. 🚧 Crear jornadas y tablas.
 6. Añadir resultados manuales y simulados.
 7. Crear eliminatorias.
 8. Implementar cambios de ranking/fuerza.
@@ -240,14 +240,22 @@ Copa-Chigui/
 - ✅ Jugador y rival personalizables.
 - ✅ Predicciones, Chigui Coins, premios e historial planificados.
 
-## v0.0.2 — Inicio de programación
+## v0.0.2 — Primer prototipo funcional
 
 - ✅ Ranking y fuerza unificados.
 - ✅ Todas las selecciones comienzan en 100.
 - ✅ Victoria `+2`, empate `0`, derrota `-2`.
 - ✅ Penales cuentan como victoria/derrota completa.
-- 🚧 Primera pantalla y generación de Copa #1 en desarrollo.
+- ✅ Pantalla para crear un universo.
+- ✅ Nombre del jugador, rival y universo.
+- ✅ Base inicial de 98 selecciones.
+- ✅ Anfitrión aleatorio.
+- ✅ Selección aleatoria de 64 participantes.
+- ✅ Sorteo automático de 16 grupos de 4.
+- ✅ El anfitrión queda marcado dentro de su grupo.
+- ✅ Guardado básico del universo en `localStorage`.
+- ✅ Opción para repetir el sorteo durante las pruebas.
 
 ### Objetivo actual
 
-Conseguir que una nueva partida pueda introducir los nombres del jugador/rival, generar un anfitrión, elegir 64 selecciones y mostrar los 16 grupos de la primera Copa Chigui.
+Crear las tres jornadas de cada grupo, las tablas de posiciones y la lógica de clasificación de los dos mejores equipos.
