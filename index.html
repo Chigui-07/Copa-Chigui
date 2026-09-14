@@ -111,9 +111,81 @@
         </div>
         <p class="muted">Si un partido termina empatado, debe resolverse por penales. Ganar por penales cuenta como victoria completa para el ranking/fuerza.</p>
         <div class="stage-actions">
-          <button id="simulateAllRoundOf32Button" class="primary-button" type="button">⚡ Simular dieciseisavos pendientes</button>
+          <button id="simulateAllRoundOf32Button" class="secondary-button" type="button">⚡ Simular pendientes</button>
+          <button id="createRoundOf16Button" class="primary-button" type="button">➡️ Crear octavos de final</button>
         </div>
         <div id="roundOf32Grid" class="knockout-grid"></div>
+      </section>
+
+      <section id="roundOf16Section" class="panel hidden">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">ELIMINACIÓN DIRECTA</p>
+            <h2>Octavos de final</h2>
+          </div>
+          <span id="roundOf16ProgressBadge" class="badge">0 / 8 partidos</span>
+        </div>
+        <div class="stage-actions">
+          <button id="simulateAllRoundOf16Button" class="secondary-button" type="button">⚡ Simular pendientes</button>
+          <button id="createQuarterfinalsButton" class="primary-button" type="button">➡️ Crear cuartos de final</button>
+        </div>
+        <div id="roundOf16Grid" class="knockout-grid"></div>
+      </section>
+
+      <section id="quarterfinalsSection" class="panel hidden">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">ELIMINACIÓN DIRECTA</p>
+            <h2>Cuartos de final</h2>
+          </div>
+          <span id="quarterfinalsProgressBadge" class="badge">0 / 4 partidos</span>
+        </div>
+        <div class="stage-actions">
+          <button id="simulateAllQuarterfinalsButton" class="secondary-button" type="button">⚡ Simular pendientes</button>
+          <button id="createSemifinalsButton" class="primary-button" type="button">➡️ Crear semifinales</button>
+        </div>
+        <div id="quarterfinalsGrid" class="knockout-grid"></div>
+      </section>
+
+      <section id="semifinalsSection" class="panel hidden">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">ELIMINACIÓN DIRECTA</p>
+            <h2>Semifinales</h2>
+          </div>
+          <span id="semifinalsProgressBadge" class="badge">0 / 2 partidos</span>
+        </div>
+        <div class="stage-actions">
+          <button id="simulateAllSemifinalsButton" class="secondary-button" type="button">⚡ Simular pendientes</button>
+          <button id="createFinalsButton" class="primary-button" type="button">🏆 Crear tercer puesto y final</button>
+        </div>
+        <div id="semifinalsGrid" class="knockout-grid"></div>
+      </section>
+
+      <section id="finalsSection" class="panel hidden">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">ÚLTIMOS PARTIDOS</p>
+            <h2>Tercer puesto y gran final</h2>
+          </div>
+          <span id="finalsProgressBadge" class="badge">0 / 2 partidos</span>
+        </div>
+        <p class="muted">Cuando ambos encuentros terminen, la Copa Chigui #1 tendrá su primer podio oficial y el campeón recibirá su primera estrella.</p>
+        <div class="stage-actions">
+          <button id="simulateAllFinalsButton" class="primary-button" type="button">⚡ Simular partidos pendientes</button>
+        </div>
+
+        <h3>🥉 Partido por el tercer puesto</h3>
+        <div id="thirdPlaceGrid" class="knockout-grid"></div>
+
+        <h3>🏆 Gran final</h3>
+        <div id="finalGrid" class="knockout-grid"></div>
+      </section>
+
+      <section id="championSection" class="panel host-card hidden">
+        <span class="host-label">🏆 COPA CHIGUI #1 FINALIZADA</span>
+        <div id="championDisplay" class="host-team"></div>
+        <p id="podiumDisplay" class="muted"></p>
       </section>
     </section>
   </main>
