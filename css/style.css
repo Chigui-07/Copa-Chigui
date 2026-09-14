@@ -498,13 +498,91 @@ input:focus {
   white-space: nowrap;
 }
 
+.knockout-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.knockout-card {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: #0d1628;
+}
+
+.knockout-card-heading {
+  padding: 9px 12px;
+  background: var(--panel-soft);
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.knockout-teams {
+  display: grid;
+  gap: 7px;
+  padding: 13px 13px 6px;
+}
+
+.knockout-team {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 800;
+}
+
+.knockout-winner {
+  color: var(--accent);
+}
+
+.knockout-score-block {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 12px;
+}
+
+.penalty-block {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px 12px;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.penalty-input {
+  width: 40px;
+  padding: 6px 4px;
+}
+
+.knockout-card .match-actions {
+  padding: 0 12px 12px;
+}
+
+.winner-note {
+  padding: 9px 12px;
+  border-top: 1px solid rgba(42, 53, 82, 0.55);
+  background: rgba(89, 210, 139, 0.07);
+  color: var(--accent);
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
 .hidden {
   display: none;
 }
 
 @media (max-width: 980px) {
   .matchdays,
-  .qualified-grid {
+  .qualified-grid,
+  .knockout-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -535,7 +613,8 @@ input:focus {
   .form-grid,
   .groups-grid,
   .matchdays,
-  .qualified-grid {
+  .qualified-grid,
+  .knockout-grid {
     grid-template-columns: 1fr;
   }
 
