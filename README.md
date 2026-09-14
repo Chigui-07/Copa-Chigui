@@ -16,7 +16,7 @@ El título del juego no hace referencia a IA ni a ChatGPT. El rival es simplemen
 
 ## 🌍 Copa Chigui #1
 
-La primera Copa será generada completamente al azar:
+La primera Copa se genera completamente al azar:
 
 - 🎲 Anfitrión aleatorio.
 - 🎲 64 selecciones aleatorias.
@@ -26,7 +26,7 @@ La primera Copa será generada completamente al azar:
 - 📊 Todas las selecciones comienzan con 100 puntos.
 - 📜 No existe historial previo.
 
-Los resultados no estarán prefijados. El simulador generará victorias, empates, derrotas, sorpresas y goleadas.
+Los resultados no están prefijados. El simulador puede producir victorias, empates, derrotas, sorpresas y goleadas.
 
 ## 🏆 Formato base
 
@@ -52,7 +52,7 @@ En este modo:
 - Los jugadores podrán elegir manualmente qué selecciones participan.
 - El anfitrión seguirá siendo elegido aleatoriamente entre las selecciones participantes.
 - La Copa tendrá su propio historial separado del universo principal.
-- El sistema de predicciones podrá ampliarse para admitir varios jugadores humanos en una misma competencia.
+- El sistema de predicciones podrá admitir varios jugadores humanos en una misma competencia.
 - Las reglas deportivas serán las mismas que en una Copa Chigui normal salvo que se configure otra cosa en el futuro.
 
 ## ⭐ Títulos y banderas
@@ -65,9 +65,11 @@ Cada Copa Chigui ganada añade una estrella visual:
 - 🇧🇷⭐⭐⭐ = 3 títulos.
 - Para cantidades grandes podrá usarse `⭐ × 7`.
 
+La carpeta `assets/flags/` queda reservada para las imágenes de bandera. Mientras se conectan esas imágenes, los emojis funcionan como respaldo.
+
 ## 📊 Ranking y fuerza
 
-En Copa Chigui, **ranking y fuerza nacen juntos**. No se utilizará una fuerza basada en el fútbol real.
+En Copa Chigui, **ranking y fuerza nacen juntos**. No se utiliza una fuerza basada en el fútbol real.
 
 Todas las selecciones comienzan exactamente iguales:
 
@@ -81,11 +83,11 @@ Regla inicial:
 | Empate | 0 pts |
 | Derrota | -2 pts |
 
-Por lo tanto, las propias Copas crearán las potencias de cada universo. Una selección que gane mucho se volverá progresivamente más fuerte en el simulador; una que acumule derrotas perderá fuerza.
+Por lo tanto, las propias Copas crean las potencias de cada universo. Una selección que gane mucho se vuelve progresivamente más fuerte en el simulador; una que acumule derrotas pierde fuerza.
 
 La diferencia de goles no modifica directamente los puntos: ganar 1-0 y ganar 7-0 cuentan como una victoria para este sistema. Las goleadas sí quedan guardadas en estadísticas y récords.
 
-La interfaz mostrará:
+La interfaz del ranking completo deberá mostrar:
 
 - Posición actual.
 - Posición anterior.
@@ -100,7 +102,7 @@ Ejemplo:
 
 ### Penales
 
-Ganar una eliminatoria por penales cuenta como victoria completa para el sistema; perderla cuenta como derrota. Además se guardan por separado el resultado antes de la tanda y el marcador de penales.
+Ganar una eliminatoria por penales cuenta como victoria completa para el sistema; perderla cuenta como derrota. Se guardan por separado el resultado antes de la tanda y el marcador de penales.
 
 ## ⚽ Sistema de partidos
 
@@ -110,7 +112,7 @@ El simulador utiliza:
 - Pequeña ventaja de localía para el anfitrión.
 - Azar controlado para permitir empates, sorpresas y goleadas.
 
-El equipo con más puntos tendrá mayor probabilidad de obtener un buen resultado, pero nunca una victoria garantizada.
+El equipo con más puntos tiene mayor probabilidad de obtener un buen resultado, pero nunca una victoria garantizada.
 
 Modos previstos:
 
@@ -122,7 +124,7 @@ Modos previstos:
 
 Cada grupo tiene tres jornadas y seis partidos en total. Con 16 grupos, la fase completa contiene **96 partidos**.
 
-La tabla usa el sistema habitual:
+La tabla usa:
 
 - Victoria: 3 puntos de grupo.
 - Empate: 1 punto de grupo.
@@ -149,7 +151,16 @@ Emparejamientos base:
 - 1.º del Grupo B vs 2.º del Grupo A.
 - Se repite el patrón por parejas de grupos hasta O/P.
 
+Después, los ganadores avanzan automáticamente a octavos, cuartos, semifinales, partido por el tercer puesto y final. Al crear una nueva ronda, la anterior queda bloqueada para evitar que un cambio posterior rompa el cuadro.
+
 Los partidos pueden registrarse manualmente o simularse. Si el marcador termina empatado, debe existir un ganador por penales. El ganador por penales obtiene la victoria completa de `+2` y el eliminado recibe `-2`.
+
+Cuando terminan el tercer puesto y la final:
+
+- Se guarda el campeón.
+- Se guarda el subcampeón.
+- Se guarda el tercer lugar.
+- El campeón recibe una estrella adicional.
 
 ## 🎯 Sistema de predicciones
 
@@ -210,6 +221,23 @@ Primera versión web sin dependencias externas:
 - `localStorage` para los primeros guardados.
 - GitHub Pages para publicación y pruebas.
 
+Estructura actual principal:
+
+```text
+Copa-Chigui/
+├─ index.html
+├─ css/
+│  └─ style.css
+├─ js/
+│  ├─ teams.js
+│  ├─ tournament.js
+│  └─ app.js
+├─ assets/
+│  └─ flags/
+│     └─ README.md
+└─ README.md
+```
+
 ## 🗺️ Ruta de desarrollo
 
 1. ✅ Crear base inicial de selecciones.
@@ -218,10 +246,10 @@ Primera versión web sin dependencias externas:
 4. ✅ Sortear 16 grupos.
 5. ✅ Crear jornadas y tablas.
 6. ✅ Añadir resultados manuales y simulados.
-7. 🚧 Crear eliminatorias: dieciseisavos listos; faltan octavos, cuartos, semifinales, tercer puesto y final.
-8. Implementar ranking mundial completo y cambios de posiciones.
+7. ✅ Crear eliminatorias completas hasta coronar campeón.
+8. 🚧 Implementar ranking mundial completo y cambios de posiciones.
 9. Implementar predicciones.
-10. Guardar historial y estadísticas.
+10. Guardar historial y estadísticas completas.
 11. Añadir Chigui Coins y premios.
 12. Añadir modo Copa con amigos.
 13. Mejorar interfaz y animaciones.
@@ -291,6 +319,21 @@ Primera versión web sin dependencias externas:
 - ✅ El ganador de cada cruce queda resaltado y marcado como clasificado.
 - ✅ Progreso visible de `0/16` a `16/16`.
 
+## v0.0.6 — Cuadro completo y primer campeón
+
+- ✅ Octavos de final con 8 partidos.
+- ✅ Cuartos de final con 4 partidos.
+- ✅ Semifinales con 2 partidos.
+- ✅ Partido por el tercer puesto.
+- ✅ Gran final.
+- ✅ Resultados manuales y simulación automática en todas las rondas.
+- ✅ Penales disponibles en todas las eliminatorias.
+- ✅ Cada ronda queda bloqueada cuando se crea la siguiente.
+- ✅ El juego guarda campeón, subcampeón y tercer lugar.
+- ✅ El campeón recibe automáticamente una estrella.
+- ✅ Pantalla final con el podio de la Copa.
+- ✅ Creada la carpeta `assets/flags/` para recibir las banderas reales del proyecto.
+
 ### Objetivo actual
 
-Crear los **octavos de final** a partir de los 16 ganadores de dieciseisavos y continuar el cuadro eliminatorio hasta poder coronar al primer campeón de la historia del juego.
+Probar el torneo completo de principio a fin y después construir el **Ranking Mundial Chigui** con posiciones, subidas/bajadas y cambios de puntos antes de integrar el sistema de predicciones.
