@@ -100,7 +100,7 @@ Ejemplo:
 
 ### Penales
 
-Ganar una eliminatoria por penales cuenta como victoria completa para el sistema; perderla cuenta como derrota. Además se guardarán por separado el resultado antes de la tanda y el marcador de penales.
+Ganar una eliminatoria por penales cuenta como victoria completa para el sistema; perderla cuenta como derrota. Además se guardan por separado el resultado antes de la tanda y el marcador de penales.
 
 ## ⚽ Sistema de partidos
 
@@ -128,7 +128,7 @@ La tabla usa el sistema habitual:
 - Empate: 1 punto de grupo.
 - Derrota: 0 puntos de grupo.
 
-Desempates provisionales de la primera versión:
+Desempates provisionales:
 
 1. Puntos de grupo.
 2. Diferencia de goles.
@@ -137,13 +137,19 @@ Desempates provisionales de la primera versión:
 
 Los dos primeros aparecen marcados como puestos de clasificación. Cuando terminan los 96 partidos, el juego muestra automáticamente las 32 selecciones clasificadas.
 
-La fase de grupos permite:
+La fase de grupos permite registrar resultados manualmente, simular un partido individual, simular el siguiente pendiente o completar todos los pendientes de una vez.
 
-- Registrar resultados manualmente.
-- Simular un partido individual.
-- Simular el siguiente partido pendiente.
-- Simular todos los partidos pendientes.
-- Ver el progreso total de partidos completados.
+## 🥊 Eliminación directa
+
+Los dieciseisavos se crean después de confirmar los 32 clasificados. En ese momento la fase de grupos queda bloqueada para que el cuadro no cambie accidentalmente.
+
+Emparejamientos base:
+
+- 1.º del Grupo A vs 2.º del Grupo B.
+- 1.º del Grupo B vs 2.º del Grupo A.
+- Se repite el patrón por parejas de grupos hasta O/P.
+
+Los partidos pueden registrarse manualmente o simularse. Si el marcador termina empatado, debe existir un ganador por penales. El ganador por penales obtiene la victoria completa de `+2` y el eliminado recibe `-2`.
 
 ## 🎯 Sistema de predicciones
 
@@ -163,16 +169,7 @@ Cada Copa reinicia el marcador de predicciones, pero el universo conservará cu�
 
 Moneda completamente virtual, sin valor real y sin compra o retiro con dinero real.
 
-Se obtendrá por:
-
-- Predicciones correctas.
-- Marcadores exactos.
-- Rachas.
-- Sorpresas acertadas.
-- Completar Copas.
-- Logros.
-
-Se gastará únicamente en contenido cosmético como temas, fondos, animaciones, marcos, decoraciones y elementos de la sala de trofeos.
+Se obtendrá por predicciones correctas, marcadores exactos, rachas, sorpresas acertadas, completar Copas y logros. Se gastará únicamente en contenido cosmético.
 
 ## 🔥 Predicción de confianza
 
@@ -191,29 +188,9 @@ En determinados momentos podrá marcarse una predicción como especial. Si se ac
 
 ## 📚 Historial permanente
 
-Cada universo guardará por Copa:
+Cada universo guardará por Copa anfitrión, participantes, grupos, resultados, eliminatorias, podio, premios, ranking posterior, predicciones y récords.
 
-- Anfitrión.
-- Participantes.
-- Grupos.
-- Resultados.
-- Eliminatorias.
-- Podio.
-- Premios.
-- Ranking posterior.
-- Predicciones.
-- Récords.
-
-Y por selección:
-
-- Participaciones.
-- Títulos.
-- Estrellas.
-- Mejor actuación.
-- PJ, G, E y P.
-- GF y GC.
-- Ranking actual.
-- Mejor ranking histórico.
+Por selección guardará participaciones, títulos, estrellas, mejor actuación, PJ, G, E, P, GF, GC, ranking actual y mejor ranking histórico.
 
 ## 💾 Universos
 
@@ -233,20 +210,6 @@ Primera versión web sin dependencias externas:
 - `localStorage` para los primeros guardados.
 - GitHub Pages para publicación y pruebas.
 
-Estructura inicial:
-
-```text
-Copa-Chigui/
-├─ index.html
-├─ css/
-│  └─ style.css
-├─ js/
-│  ├─ teams.js
-│  ├─ tournament.js
-│  └─ app.js
-└─ README.md
-```
-
 ## 🗺️ Ruta de desarrollo
 
 1. ✅ Crear base inicial de selecciones.
@@ -255,7 +218,7 @@ Copa-Chigui/
 4. ✅ Sortear 16 grupos.
 5. ✅ Crear jornadas y tablas.
 6. ✅ Añadir resultados manuales y simulados.
-7. 🚧 Crear eliminatorias.
+7. 🚧 Crear eliminatorias: dieciseisavos listos; faltan octavos, cuartos, semifinales, tercer puesto y final.
 8. Implementar ranking mundial completo y cambios de posiciones.
 9. Implementar predicciones.
 10. Guardar historial y estadísticas.
@@ -293,35 +256,41 @@ Copa-Chigui/
 - ✅ Sorteo automático de 16 grupos de 4.
 - ✅ El anfitrión queda marcado dentro de su grupo.
 - ✅ Guardado básico del universo en `localStorage`.
-- ✅ Opción para repetir el sorteo durante las pruebas.
 
 ## v0.0.3 — Fase de grupos
 
 - ✅ Generación automática de las 3 jornadas de cada grupo.
 - ✅ 6 partidos por grupo y **96 partidos en total**.
 - ✅ Tablas con PJ, G, E, P, GF, GC, DG y puntos.
-- ✅ Los dos primeros puestos quedan resaltados como clasificados.
 - ✅ Resultados manuales editables.
-- ✅ Las tablas se recalculan automáticamente al guardar un resultado.
 - ✅ Victoria actualiza el ranking/fuerza en `+2/-2`.
 - ✅ Empate no cambia el ranking/fuerza.
-- ✅ Editar un resultado vuelve a calcular los puntos desde el inicio para evitar duplicados.
-- ✅ Compatibilidad con partidas locales creadas en la versión anterior.
-- 📝 Planeado el modo **Copa con amigos**, con participantes elegidos manualmente y anfitrión aleatorio.
+- ✅ Compatibilidad con partidas locales anteriores.
+- 📝 Planeado el modo **Copa con amigos**.
 
 ## v0.0.4 — Simulación automática y clasificados
 
 - ✅ Simulación automática basada en la fuerza/puntos actuales.
 - ✅ Ventaja pequeña y temporal para el anfitrión.
-- ✅ Azar controlado para que sigan existiendo sorpresas.
 - ✅ Botón de simulación por partido.
 - ✅ Botón para simular el siguiente partido pendiente.
 - ✅ Botón para simular todos los partidos pendientes.
 - ✅ Progreso visible de `0/96` hasta `96/96`.
-- ✅ Los resultados simulados y manuales pueden convivir en la misma Copa.
 - ✅ Al finalizar los grupos aparecen automáticamente los 32 clasificados.
 - ✅ Corregido el conteo total de la fase de grupos: son 96 partidos, no 48.
 
+## v0.0.5 — Dieciseisavos de final
+
+- ✅ Botón para confirmar los clasificados y crear los 16 cruces.
+- ✅ La fase de grupos se bloquea al iniciar eliminatorias.
+- ✅ Resultados manuales en dieciseisavos.
+- ✅ Simulación automática por partido.
+- ✅ Simulación de todos los partidos pendientes.
+- ✅ Tandas de penales cuando el partido termina empatado.
+- ✅ Ganar por penales cuenta como victoria completa `+2/-2`.
+- ✅ El ganador de cada cruce queda resaltado y marcado como clasificado.
+- ✅ Progreso visible de `0/16` a `16/16`.
+
 ### Objetivo actual
 
-Crear los dieciseisavos de final con los 32 clasificados, incluyendo resultados manuales/simulados y resolución por penales cuando un partido eliminatorio termine empatado.
+Crear los **octavos de final** a partir de los 16 ganadores de dieciseisavos y continuar el cuadro eliminatorio hasta poder coronar al primer campeón de la historia del juego.
