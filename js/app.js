@@ -7,6 +7,8 @@
   var newDrawButton = document.getElementById("newDrawButton");
   var simulateNextButton = document.getElementById("simulateNextButton");
   var simulateAllButton = document.getElementById("simulateAllButton");
+  var createRoundOf32Button = document.getElementById("createRoundOf32Button");
+  var simulateAllRoundOf32Button = document.getElementById("simulateAllRoundOf32Button");
 
   var playerNameInput = document.getElementById("playerName");
   var rivalNameInput = document.getElementById("rivalName");
@@ -21,6 +23,9 @@
   var groupProgressBadge = document.getElementById("groupProgressBadge");
   var qualifiedSection = document.getElementById("qualifiedSection");
   var qualifiedGrid = document.getElementById("qualifiedGrid");
+  var roundOf32Section = document.getElementById("roundOf32Section");
+  var roundOf32Grid = document.getElementById("roundOf32Grid");
+  var roundOf32ProgressBadge = document.getElementById("roundOf32ProgressBadge");
 
   var currentUniverse = null;
 
@@ -160,7 +165,7 @@
   }
 
   function commitUniverseUpdate() {
-    currentUniverse.version = "0.0.4";
+    currentUniverse.version = "0.0.5";
     saveUniverse(currentUniverse);
     renderUniverse(currentUniverse);
   }
@@ -168,6 +173,7 @@
   function renderMatch(match, cup) {
     var home = getTeam(cup, match.homeId);
     var away = getTeam(cup, match.awayId);
+    var locked = Boolean(cup.groupStageLocked);
     var row = document.createElement("div");
     row.className = "match-row" + (match.completed ? " completed-match" : "");
 
@@ -185,6 +191,7 @@
     homeInput.inputMode = "numeric";
     homeInput.className = "goal-input";
     homeInput.setAttribute("aria-label", "Goles de " + home.name);
+    homeInput.disabled = locked;
     if (match.completed) {
       homeInput.value = match.homeGoals;
     }
@@ -200,6 +207,7 @@
     awayInput.inputMode = "numeric";
     awayInput.className = "goal-input";
     awayInput.setAttribute("aria-label", "Goles de " + away.name);
+    awayInput.disabled = locked;
     if (match.completed) {
       awayInput.value = match.awayGoals;
     }
@@ -218,7 +226,8 @@
     var saveButton = document.createElement("button");
     saveButton.type = "button";
     saveButton.className = "match-save-button";
-    saveButton.textContent = match.completed ? "Actualizar" : "Guardar manual";
+    saveButton.textContent = locked ? "🔒 Fase cerrada" : (match.completed ? "Actualizar" : "Guardar manual");
+    saveButton.disabled = locked;
 
     saveButton.addEventListener("click", function () {
       if (homeInput.value === "" || awayInput.value === "") {
@@ -237,8 +246,8 @@
     var simulateButton = document.createElement("button");
     simulateButton.type = "button";
     simulateButton.className = "match-simulate-button";
-    simulateButton.textContent = match.completed ? (match.source === "simulated" ? "🎲 Simulado" : "✓ Registrado") : "🎲 Simular";
-    simulateButton.disabled = match.completed;
+    simulateButton.textContent = locked ? "🔒 Cerrado" : (match.completed ? (match.source === "simulated" ? "🎲 Simulado" : "✓ Registrado") : "🎲 Simular");
+    simulateButton.disabled = locked || match.completed;
 
     simulateButton.addEventListener("click", function () {
       try {
@@ -347,15 +356,179 @@
 
       qualifiedGrid.appendChild(card);
     }
+
+    if (universe.cup.knockout && Array.isArray(universe.cup.knockout.roundOf32)) {
+      createRoundOf32Button.disabled = true;
+      createRoundOf32Button.textContent = "✅ Dieciseisavos creados";
+    } else {
+      createRoundOf32Button.disabled = false;
+      createRoundOf32Button.textContent = "🏆 Crear dieciseisavos de final";
+    }
+  }
+
+  function numberInput(label, value) {
+    var input = document.createElement("input");
+    input.type = "number";
+    input.min = "0";
+    input.max = "99";
+    input.inputMode = "numeric";
+    input.className = "goal-input";
+    input.setAttribute("aria-label", label);
+    if (value !== null && typeof value !== "undefined") {
+      input.value = value;
+    }
+    return input;
+  }
+
+  function renderKnockoutMatch(match, cup, index) {
+    var home = getTeam(cup, match.homeId);
+    var away = getTeam(cup, match.awayId);
+    var card = document.createElement("article");
+    card.className = "knockout-card" + (match.completed ? " completed-knockout" : "");
+
+    var heading = document.createElement("div");
+    heading.className = "knockout-card-heading";
+    heading.textContent = "Partido " + (index + 1);
+    card.appendChild(heading);
+
+    var teams = document.createElement("div");
+    teams.className = "knockout-teams";
+
+    var homeName = document.createElement("div");
+    homeName.className = "knockout-team" + (match.winnerId === home.id ? " knockout-winner" : "");
+    homeName.textContent = home.flag + " " + home.name + starsFor(home);
+
+    var awayName = document.createElement("div");
+    awayName.className = "knockout-team" + (match.winnerId === away.id ? " knockout-winner" : "");
+    awayName.textContent = away.flag + " " + away.name + starsFor(away);
+
+    teams.appendChild(homeName);
+    teams.appendChild(awayName);
+    card.appendChild(teams);
+
+    var scoreBlock = document.createElement("div");
+    scoreBlock.className = "knockout-score-block";
+
+    var homeGoals = numberInput("Goles de " + home.name, match.completed ? match.homeGoals : null);
+    var awayGoals = numberInput("Goles de " + away.name, match.completed ? match.awayGoals : null);
+    var dash = document.createElement("span");
+    dash.textContent = "–";
+    dash.className = "score-separator";
+
+    scoreBlock.appendChild(homeGoals);
+    scoreBlock.appendChild(dash);
+    scoreBlock.appendChild(awayGoals);
+    card.appendChild(scoreBlock);
+
+    var penaltyBlock = document.createElement("div");
+    penaltyBlock.className = "penalty-block";
+
+    var penaltyLabel = document.createElement("span");
+    penaltyLabel.textContent = "Penales";
+
+    var penaltyHome = numberInput("Penales de " + home.name, match.penaltyHome);
+    penaltyHome.className += " penalty-input";
+    var penaltyAway = numberInput("Penales de " + away.name, match.penaltyAway);
+    penaltyAway.className += " penalty-input";
+    var penaltyDash = document.createElement("span");
+    penaltyDash.textContent = "–";
+    penaltyDash.className = "score-separator";
+
+    penaltyBlock.appendChild(penaltyLabel);
+    penaltyBlock.appendChild(penaltyHome);
+    penaltyBlock.appendChild(penaltyDash);
+    penaltyBlock.appendChild(penaltyAway);
+    card.appendChild(penaltyBlock);
+
+    var actions = document.createElement("div");
+    actions.className = "match-actions";
+
+    var saveButton = document.createElement("button");
+    saveButton.type = "button";
+    saveButton.className = "match-save-button";
+    saveButton.textContent = match.completed ? "Actualizar" : "Guardar manual";
+
+    saveButton.addEventListener("click", function () {
+      if (homeGoals.value === "" || awayGoals.value === "") {
+        window.alert("Escribe el marcador del partido antes de guardarlo.");
+        return;
+      }
+
+      try {
+        window.CopaChiguiTournament.setKnockoutResult(
+          currentUniverse.cup,
+          match.id,
+          Number(homeGoals.value),
+          Number(awayGoals.value),
+          penaltyHome.value === "" ? null : Number(penaltyHome.value),
+          penaltyAway.value === "" ? null : Number(penaltyAway.value),
+          "manual"
+        );
+        commitUniverseUpdate();
+      } catch (error) {
+        window.alert(error.message);
+      }
+    });
+
+    var simulateButton = document.createElement("button");
+    simulateButton.type = "button";
+    simulateButton.className = "match-simulate-button";
+    simulateButton.textContent = match.completed ? (match.source === "simulated" ? "🎲 Simulado" : "✓ Registrado") : "🎲 Simular";
+    simulateButton.disabled = match.completed;
+
+    simulateButton.addEventListener("click", function () {
+      try {
+        window.CopaChiguiTournament.simulateKnockoutMatch(currentUniverse.cup, match.id);
+        commitUniverseUpdate();
+      } catch (error) {
+        window.alert(error.message);
+      }
+    });
+
+    actions.appendChild(saveButton);
+    actions.appendChild(simulateButton);
+    card.appendChild(actions);
+
+    if (match.completed && match.winnerId) {
+      var winner = getTeam(cup, match.winnerId);
+      var winnerNote = document.createElement("div");
+      winnerNote.className = "winner-note";
+      winnerNote.textContent = "✅ Clasifica " + winner.flag + " " + winner.name + (match.penaltyHome !== null ? " por penales" : "");
+      card.appendChild(winnerNote);
+    }
+
+    return card;
+  }
+
+  function renderRoundOf32(universe) {
+    if (!universe.cup.knockout || !Array.isArray(universe.cup.knockout.roundOf32)) {
+      roundOf32Section.classList.add("hidden");
+      return;
+    }
+
+    roundOf32Section.classList.remove("hidden");
+    roundOf32Grid.innerHTML = "";
+
+    universe.cup.knockout.roundOf32.forEach(function (match, index) {
+      roundOf32Grid.appendChild(renderKnockoutMatch(match, universe.cup, index));
+    });
+
+    var progress = window.CopaChiguiTournament.getRoundOf32Progress(universe.cup);
+    roundOf32ProgressBadge.textContent = progress.completed + " / " + progress.total + " partidos";
+    simulateAllRoundOf32Button.disabled = progress.finished;
+    simulateAllRoundOf32Button.textContent = progress.finished ? "✅ Dieciseisavos terminados" : "⚡ Simular dieciseisavos pendientes";
   }
 
   function renderProgress(universe) {
     var progress = window.CopaChiguiTournament.getGroupStageProgress(universe.cup);
     groupProgressBadge.textContent = progress.completed + " / " + progress.total + " partidos";
-    simulateNextButton.disabled = progress.finished;
-    simulateAllButton.disabled = progress.finished;
+    simulateNextButton.disabled = progress.finished || universe.cup.groupStageLocked;
+    simulateAllButton.disabled = progress.finished || universe.cup.groupStageLocked;
 
-    if (progress.finished) {
+    if (universe.cup.groupStageLocked) {
+      simulateNextButton.textContent = "🔒 Fase cerrada";
+      simulateAllButton.textContent = "🔒 Eliminatorias iniciadas";
+    } else if (progress.finished) {
       simulateNextButton.textContent = "✅ Fase terminada";
       simulateAllButton.textContent = "✅ 32 clasificados";
     } else {
@@ -380,6 +553,7 @@
     renderProgress(universe);
     renderGroupStage(universe);
     renderQualifiedTeams(universe);
+    renderRoundOf32(universe);
   }
 
   function saveUniverse(universe) {
@@ -394,7 +568,7 @@
     var cup = window.CopaChiguiTournament.generateFirstCup(window.COPA_CHIGUI_TEAMS);
 
     return {
-      version: "0.0.4",
+      version: "0.0.5",
       name: universeName,
       playerName: playerName,
       rivalName: rivalName,
@@ -454,7 +628,7 @@
     }
 
     var progress = window.CopaChiguiTournament.getGroupStageProgress(currentUniverse.cup);
-    if (progress.finished) {
+    if (progress.finished || currentUniverse.cup.groupStageLocked) {
       return;
     }
 
@@ -465,6 +639,49 @@
     }
 
     window.CopaChiguiTournament.simulateAllPendingGroupStage(currentUniverse.cup);
+    commitUniverseUpdate();
+  });
+
+  createRoundOf32Button.addEventListener("click", function () {
+    if (!currentUniverse) {
+      return;
+    }
+
+    var confirmation = window.confirm("¿Crear los dieciseisavos? La fase de grupos quedará bloqueada para conservar los 32 clasificados.");
+    if (!confirmation) {
+      return;
+    }
+
+    try {
+      window.CopaChiguiTournament.createRoundOf32(currentUniverse.cup);
+      commitUniverseUpdate();
+    } catch (error) {
+      window.alert(error.message);
+    }
+  });
+
+  simulateAllRoundOf32Button.addEventListener("click", function () {
+    if (!currentUniverse || !currentUniverse.cup.knockout) {
+      return;
+    }
+
+    var progress = window.CopaChiguiTournament.getRoundOf32Progress(currentUniverse.cup);
+    if (progress.finished) {
+      return;
+    }
+
+    var pending = progress.total - progress.completed;
+    var confirmation = window.confirm("¿Simular los " + pending + " partidos pendientes de dieciseisavos?");
+    if (!confirmation) {
+      return;
+    }
+
+    currentUniverse.cup.knockout.roundOf32.forEach(function (match) {
+      if (!match.completed) {
+        window.CopaChiguiTournament.simulateKnockoutMatch(currentUniverse.cup, match.id);
+      }
+    });
+
     commitUniverseUpdate();
   });
 
