@@ -89,6 +89,20 @@
     return null;
   }
 
+  function findKnockoutMatch(cup, matchId) {
+    if (!cup.knockout || !Array.isArray(cup.knockout.roundOf32)) {
+      return null;
+    }
+
+    for (var i = 0; i < cup.knockout.roundOf32.length; i += 1) {
+      if (cup.knockout.roundOf32[i].id === matchId) {
+        return cup.knockout.roundOf32[i];
+      }
+    }
+
+    return null;
+  }
+
   function ensureCupData(cup) {
     cup.participants.forEach(function (team) {
       if (typeof team.startingPoints !== "number") {
@@ -124,6 +138,19 @@
       });
     });
 
+    if (cup.knockout && Array.isArray(cup.knockout.roundOf32)) {
+      cup.groupStageLocked = true;
+      cup.knockout.roundOf32.forEach(function (match) {
+        if (typeof match.source === "undefined") {
+          match.source = match.completed ? "manual" : null;
+        }
+        if (typeof match.penaltyHome === "undefined") {
+          match.penaltyHome = null;
+          match.penaltyAway = null;
+        }
+      });
+    }
+
     recalculateCup(cup);
     return cup;
   }
@@ -143,6 +170,26 @@
       tablePoints: 0,
       worldPoints: team.points
     };
+  }
+
+  function applyKnockoutPoints(cup) {
+    if (!cup.knockout || !Array.isArray(cup.knockout.roundOf32)) {
+      return;
+    }
+
+    cup.knockout.roundOf32.forEach(function (match) {
+      if (!match.completed || !match.winnerId) {
+        return;
+      }
+
+      var homeTeam = findParticipant(cup, match.homeId);
+      var awayTeam = findParticipant(cup, match.awayId);
+      var winner = match.winnerId === homeTeam.id ? homeTeam : awayTeam;
+      var loser = match.winnerId === homeTeam.id ? awayTeam : homeTeam;
+
+      winner.points += 2;
+      loser.points -= 2;
+    });
   }
 
   function recalculateCup(cup) {
@@ -221,7 +268,11 @@
       });
 
       group.standings = standings;
+    });
 
+    applyKnockoutPoints(cup);
+
+    cup.groups.forEach(function (group) {
       group.teams.forEach(function (team) {
         var participant = findParticipant(cup, team.id);
         if (participant) {
@@ -235,6 +286,10 @@
   }
 
   function setMatchResult(cup, matchId, homeGoals, awayGoals, source) {
+    if (cup.groupStageLocked) {
+      throw new Error("La fase de grupos está cerrada porque ya comenzaron las eliminatorias.");
+    }
+
     var parsedHome = Number(homeGoals);
     var parsedAway = Number(awayGoals);
 
@@ -292,6 +347,10 @@
   }
 
   function simulateMatch(cup, matchId) {
+    if (cup.groupStageLocked) {
+      throw new Error("La fase de grupos está cerrada porque ya comenzaron las eliminatorias.");
+    }
+
     recalculateCup(cup);
 
     var match = findMatch(cup, matchId);
@@ -396,6 +455,169 @@
     return qualified;
   }
 
+  function makeKnockoutMatch(index, homeId, awayId) {
+    return {
+      id: "R32-M" + (index + 1),
+      homeId: homeId,
+      awayId: awayId,
+      homeGoals: null,
+      awayGoals: null,
+      penaltyHome: null,
+      penaltyAway: null,
+      winnerId: null,
+      completed: false,
+      source: null
+    };
+  }
+
+  function createRoundOf32(cup) {
+    if (!getGroupStageProgress(cup).finished) {
+      throw new Error("Debes terminar la fase de grupos antes de crear los dieciseisavos.");
+    }
+
+    if (cup.knockout && Array.isArray(cup.knockout.roundOf32)) {
+      return cup.knockout.roundOf32;
+    }
+
+    recalculateCup(cup);
+
+    var winners = [];
+    var runnersUp = [];
+    cup.groups.forEach(function (group) {
+      winners.push(group.standings[0].id);
+      runnersUp.push(group.standings[1].id);
+    });
+
+    var matches = [];
+    var pairStarts = [0, 2, 4, 6, 8, 10, 12, 14];
+
+    pairStarts.forEach(function (start) {
+      matches.push(makeKnockoutMatch(matches.length, winners[start], runnersUp[start + 1]));
+    });
+
+    pairStarts.forEach(function (start) {
+      matches.push(makeKnockoutMatch(matches.length, winners[start + 1], runnersUp[start]));
+    });
+
+    cup.knockout = {
+      roundOf32: matches
+    };
+    cup.groupStageLocked = true;
+    recalculateCup(cup);
+    return matches;
+  }
+
+  function validatePenaltyScore(home, away) {
+    return Number.isInteger(home) && Number.isInteger(away) && home >= 0 && away >= 0 && home !== away;
+  }
+
+  function setKnockoutResult(cup, matchId, homeGoals, awayGoals, penaltyHome, penaltyAway, source) {
+    var match = findKnockoutMatch(cup, matchId);
+    if (!match) {
+      throw new Error("No se encontró el partido de eliminación directa.");
+    }
+
+    var parsedHome = Number(homeGoals);
+    var parsedAway = Number(awayGoals);
+
+    if (!Number.isInteger(parsedHome) || !Number.isInteger(parsedAway) || parsedHome < 0 || parsedAway < 0) {
+      throw new Error("El resultado debe usar goles enteros iguales o mayores que 0.");
+    }
+
+    var winnerId = null;
+    var parsedPenaltyHome = null;
+    var parsedPenaltyAway = null;
+
+    if (parsedHome > parsedAway) {
+      winnerId = match.homeId;
+    } else if (parsedAway > parsedHome) {
+      winnerId = match.awayId;
+    } else {
+      parsedPenaltyHome = Number(penaltyHome);
+      parsedPenaltyAway = Number(penaltyAway);
+      if (!validatePenaltyScore(parsedPenaltyHome, parsedPenaltyAway)) {
+        throw new Error("Si el partido termina empatado, escribe una tanda de penales válida y sin empate.");
+      }
+      winnerId = parsedPenaltyHome > parsedPenaltyAway ? match.homeId : match.awayId;
+    }
+
+    match.homeGoals = parsedHome;
+    match.awayGoals = parsedAway;
+    match.penaltyHome = parsedPenaltyHome;
+    match.penaltyAway = parsedPenaltyAway;
+    match.winnerId = winnerId;
+    match.completed = true;
+    match.source = source || "manual";
+
+    recalculateCup(cup);
+    return match;
+  }
+
+  function simulatePenaltyShootout() {
+    var home = 3 + Math.floor(Math.random() * 3);
+    var away = 3 + Math.floor(Math.random() * 3);
+
+    if (home === away) {
+      if (Math.random() < 0.5) {
+        home += 1;
+      } else {
+        away += 1;
+      }
+    }
+
+    return {
+      home: home,
+      away: away
+    };
+  }
+
+  function simulateKnockoutMatch(cup, matchId) {
+    recalculateCup(cup);
+
+    var match = findKnockoutMatch(cup, matchId);
+    if (!match) {
+      throw new Error("No se encontró el partido de eliminación directa.");
+    }
+    if (match.completed) {
+      throw new Error("Ese partido ya tiene resultado.");
+    }
+
+    var homeTeam = findParticipant(cup, match.homeId);
+    var awayTeam = findParticipant(cup, match.awayId);
+    var score = simulateScore(cup, homeTeam, awayTeam);
+    var penalties = { home: null, away: null };
+
+    if (score.homeGoals === score.awayGoals) {
+      penalties = simulatePenaltyShootout();
+    }
+
+    return setKnockoutResult(
+      cup,
+      match.id,
+      score.homeGoals,
+      score.awayGoals,
+      penalties.home,
+      penalties.away,
+      "simulated"
+    );
+  }
+
+  function getRoundOf32Progress(cup) {
+    if (!cup.knockout || !Array.isArray(cup.knockout.roundOf32)) {
+      return { completed: 0, total: 16, finished: false };
+    }
+
+    var completed = cup.knockout.roundOf32.filter(function (match) {
+      return match.completed;
+    }).length;
+
+    return {
+      completed: completed,
+      total: cup.knockout.roundOf32.length,
+      finished: completed === cup.knockout.roundOf32.length
+    };
+  }
+
   function generateFirstCup(allTeams) {
     if (!Array.isArray(allTeams) || allTeams.length < 64) {
       throw new Error("Se necesitan al menos 64 selecciones para generar una Copa Chigui.");
@@ -430,6 +652,7 @@
       host: host,
       participants: participants,
       groups: groups,
+      groupStageLocked: false,
       createdAt: new Date().toISOString()
     };
   }
@@ -446,7 +669,12 @@
     simulateAllPendingGroupStage: simulateAllPendingGroupStage,
     getGroupStageProgress: getGroupStageProgress,
     getQualifiedTeams: getQualifiedTeams,
+    createRoundOf32: createRoundOf32,
+    setKnockoutResult: setKnockoutResult,
+    simulateKnockoutMatch: simulateKnockoutMatch,
+    getRoundOf32Progress: getRoundOf32Progress,
     findParticipant: findParticipant,
-    findMatch: findMatch
+    findMatch: findMatch,
+    findKnockoutMatch: findKnockoutMatch
   };
 }());
