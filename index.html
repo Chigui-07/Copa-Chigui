@@ -74,10 +74,28 @@
             <p class="eyebrow">FASE DE GRUPOS</p>
             <h2>Jornadas y tablas</h2>
           </div>
-          <span class="badge">3 jornadas por grupo</span>
+          <span id="groupProgressBadge" class="badge">0 / 96 partidos</span>
         </div>
-        <p class="muted">Ingresa un resultado y guárdalo. La tabla se recalcula automáticamente y la selección ganadora recibe +2 puntos de ranking; la perdedora -2. El empate no modifica el ranking.</p>
+        <p class="muted">Puedes escribir resultados manualmente o dejar que el juego los simule. La selección ganadora recibe +2 puntos de ranking/fuerza, la perdedora -2 y el empate no modifica esos puntos.</p>
+
+        <div class="stage-actions">
+          <button id="simulateNextButton" class="secondary-button" type="button">🎲 Simular siguiente</button>
+          <button id="simulateAllButton" class="primary-button" type="button">⚡ Simular todos los pendientes</button>
+        </div>
+
         <div id="groupStageList" class="group-stage-list"></div>
+      </section>
+
+      <section id="qualifiedSection" class="panel hidden">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">CLASIFICADOS</p>
+            <h2>32 selecciones avanzan</h2>
+          </div>
+          <span class="badge">Dieciseisavos</span>
+        </div>
+        <p class="muted">Los dos primeros de cada grupo ya tienen su lugar en la fase de eliminación directa.</p>
+        <div id="qualifiedGrid" class="qualified-grid"></div>
       </section>
     </section>
   </main>
