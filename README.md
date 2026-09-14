@@ -104,14 +104,13 @@ Ganar una eliminatoria por penales cuenta como victoria completa para el sistema
 
 ## ⚽ Sistema de partidos
 
-El simulador utilizará principalmente:
+El simulador utiliza:
 
 - Puntos/fuerza actual de ambas selecciones.
-- Forma reciente.
 - Pequeña ventaja de localía para el anfitrión.
-- Azar controlado.
+- Azar controlado para permitir empates, sorpresas y goleadas.
 
-El equipo con más puntos tendrá mayor probabilidad de ganar, pero nunca una victoria garantizada.
+El equipo con más puntos tendrá mayor probabilidad de obtener un buen resultado, pero nunca una victoria garantizada.
 
 Modos previstos:
 
@@ -121,7 +120,7 @@ Modos previstos:
 
 ## 📋 Fase de grupos
 
-Cada grupo tiene tres jornadas y seis partidos en total.
+Cada grupo tiene tres jornadas y seis partidos en total. Con 16 grupos, la fase completa contiene **96 partidos**.
 
 La tabla usa el sistema habitual:
 
@@ -136,7 +135,15 @@ Desempates provisionales de la primera versión:
 3. Goles a favor.
 4. Orden alfabético como último criterio técnico provisional.
 
-Los dos primeros aparecen marcados como puestos de clasificación. El último criterio será reemplazado más adelante por un sistema deportivo más completo si es necesario.
+Los dos primeros aparecen marcados como puestos de clasificación. Cuando terminan los 96 partidos, el juego muestra automáticamente las 32 selecciones clasificadas.
+
+La fase de grupos permite:
+
+- Registrar resultados manualmente.
+- Simular un partido individual.
+- Simular el siguiente partido pendiente.
+- Simular todos los partidos pendientes.
+- Ver el progreso total de partidos completados.
 
 ## 🎯 Sistema de predicciones
 
@@ -247,8 +254,8 @@ Copa-Chigui/
 3. ✅ Elegir anfitrión y 64 participantes aleatorios.
 4. ✅ Sortear 16 grupos.
 5. ✅ Crear jornadas y tablas.
-6. 🚧 Añadir resultados manuales y simulados.
-7. Crear eliminatorias.
+6. ✅ Añadir resultados manuales y simulados.
+7. 🚧 Crear eliminatorias.
 8. Implementar ranking mundial completo y cambios de posiciones.
 9. Implementar predicciones.
 10. Guardar historial y estadísticas.
@@ -291,7 +298,7 @@ Copa-Chigui/
 ## v0.0.3 — Fase de grupos
 
 - ✅ Generación automática de las 3 jornadas de cada grupo.
-- ✅ 6 partidos por grupo y 48 partidos en total.
+- ✅ 6 partidos por grupo y **96 partidos en total**.
 - ✅ Tablas con PJ, G, E, P, GF, GC, DG y puntos.
 - ✅ Los dos primeros puestos quedan resaltados como clasificados.
 - ✅ Resultados manuales editables.
@@ -302,6 +309,19 @@ Copa-Chigui/
 - ✅ Compatibilidad con partidas locales creadas en la versión anterior.
 - 📝 Planeado el modo **Copa con amigos**, con participantes elegidos manualmente y anfitrión aleatorio.
 
+## v0.0.4 — Simulación automática y clasificados
+
+- ✅ Simulación automática basada en la fuerza/puntos actuales.
+- ✅ Ventaja pequeña y temporal para el anfitrión.
+- ✅ Azar controlado para que sigan existiendo sorpresas.
+- ✅ Botón de simulación por partido.
+- ✅ Botón para simular el siguiente partido pendiente.
+- ✅ Botón para simular todos los partidos pendientes.
+- ✅ Progreso visible de `0/96` hasta `96/96`.
+- ✅ Los resultados simulados y manuales pueden convivir en la misma Copa.
+- ✅ Al finalizar los grupos aparecen automáticamente los 32 clasificados.
+- ✅ Corregido el conteo total de la fase de grupos: son 96 partidos, no 48.
+
 ### Objetivo actual
 
-Probar la fase de grupos, completar el sistema de resultados con simulación automática y después crear la ronda de 32 con los dos clasificados de cada grupo.
+Crear los dieciseisavos de final con los 32 clasificados, incluyendo resultados manuales/simulados y resolución por penales cuando un partido eliminatorio termine empatado.
