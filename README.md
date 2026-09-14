@@ -43,6 +43,18 @@ Los resultados no estarán prefijados. El simulador generará victorias, empates
 
 Desde la Copa #2, el campeón vigente clasifica automáticamente. El resto de plazas y el nuevo anfitrión se generan según las reglas de la nueva edición.
 
+## 👥 Copa con amigos
+
+Además del modo principal de historia, se planea un modo separado para jugar una Copa con amigos.
+
+En este modo:
+
+- Los jugadores podrán elegir manualmente qué selecciones participan.
+- El anfitrión seguirá siendo elegido aleatoriamente entre las selecciones participantes.
+- La Copa tendrá su propio historial separado del universo principal.
+- El sistema de predicciones podrá ampliarse para admitir varios jugadores humanos en una misma competencia.
+- Las reglas deportivas serán las mismas que en una Copa Chigui normal salvo que se configure otra cosa en el futuro.
+
 ## ⭐ Títulos y banderas
 
 Las selecciones se representan con banderas.
@@ -106,6 +118,25 @@ Modos previstos:
 1. **Simulación rápida:** genera directamente el resultado.
 2. **Resultado manual:** el usuario introduce un resultado obtenido externamente.
 3. **Simulación visual:** futura representación del partido minuto a minuto.
+
+## 📋 Fase de grupos
+
+Cada grupo tiene tres jornadas y seis partidos en total.
+
+La tabla usa el sistema habitual:
+
+- Victoria: 3 puntos de grupo.
+- Empate: 1 punto de grupo.
+- Derrota: 0 puntos de grupo.
+
+Desempates provisionales de la primera versión:
+
+1. Puntos de grupo.
+2. Diferencia de goles.
+3. Goles a favor.
+4. Orden alfabético como último criterio técnico provisional.
+
+Los dos primeros aparecen marcados como puestos de clasificación. El último criterio será reemplazado más adelante por un sistema deportivo más completo si es necesario.
 
 ## 🎯 Sistema de predicciones
 
@@ -215,14 +246,15 @@ Copa-Chigui/
 2. ✅ Crear pantalla de nuevo universo.
 3. ✅ Elegir anfitrión y 64 participantes aleatorios.
 4. ✅ Sortear 16 grupos.
-5. 🚧 Crear jornadas y tablas.
-6. Añadir resultados manuales y simulados.
+5. ✅ Crear jornadas y tablas.
+6. 🚧 Añadir resultados manuales y simulados.
 7. Crear eliminatorias.
-8. Implementar cambios de ranking/fuerza.
+8. Implementar ranking mundial completo y cambios de posiciones.
 9. Implementar predicciones.
 10. Guardar historial y estadísticas.
 11. Añadir Chigui Coins y premios.
-12. Mejorar interfaz y animaciones.
+12. Añadir modo Copa con amigos.
+13. Mejorar interfaz y animaciones.
 
 ---
 
@@ -256,6 +288,20 @@ Copa-Chigui/
 - ✅ Guardado básico del universo en `localStorage`.
 - ✅ Opción para repetir el sorteo durante las pruebas.
 
+## v0.0.3 — Fase de grupos
+
+- ✅ Generación automática de las 3 jornadas de cada grupo.
+- ✅ 6 partidos por grupo y 48 partidos en total.
+- ✅ Tablas con PJ, G, E, P, GF, GC, DG y puntos.
+- ✅ Los dos primeros puestos quedan resaltados como clasificados.
+- ✅ Resultados manuales editables.
+- ✅ Las tablas se recalculan automáticamente al guardar un resultado.
+- ✅ Victoria actualiza el ranking/fuerza en `+2/-2`.
+- ✅ Empate no cambia el ranking/fuerza.
+- ✅ Editar un resultado vuelve a calcular los puntos desde el inicio para evitar duplicados.
+- ✅ Compatibilidad con partidas locales creadas en la versión anterior.
+- 📝 Planeado el modo **Copa con amigos**, con participantes elegidos manualmente y anfitrión aleatorio.
+
 ### Objetivo actual
 
-Crear las tres jornadas de cada grupo, las tablas de posiciones y la lógica de clasificación de los dos mejores equipos.
+Probar la fase de grupos, completar el sistema de resultados con simulación automática y después crear la ronda de 32 con los dos clasificados de cada grupo.
