@@ -12,6 +12,10 @@
     return copy;
   }
 
+  function clamp(value, min, max) {
+    return Math.max(min, Math.min(max, value));
+  }
+
   function cloneTeam(team) {
     return {
       id: team.id,
@@ -30,7 +34,8 @@
       awayId: awayId,
       homeGoals: null,
       awayGoals: null,
-      completed: false
+      completed: false,
+      source: null
     };
   }
 
@@ -69,6 +74,21 @@
     return null;
   }
 
+  function findMatch(cup, matchId) {
+    for (var g = 0; g < cup.groups.length; g += 1) {
+      var group = cup.groups[g];
+      for (var d = 0; d < group.matchdays.length; d += 1) {
+        var matchday = group.matchdays[d];
+        for (var m = 0; m < matchday.matches.length; m += 1) {
+          if (matchday.matches[m].id === matchId) {
+            return matchday.matches[m];
+          }
+        }
+      }
+    }
+    return null;
+  }
+
   function ensureCupData(cup) {
     cup.participants.forEach(function (team) {
       if (typeof team.startingPoints !== "number") {
@@ -76,6 +96,9 @@
       }
       if (typeof team.points !== "number") {
         team.points = team.startingPoints;
+      }
+      if (typeof team.titles !== "number") {
+        team.titles = 0;
       }
     });
 
@@ -91,6 +114,14 @@
       if (!Array.isArray(group.matchdays) || group.matchdays.length !== 3) {
         group.matchdays = createGroupMatchdays(group.teams, groupIndex + 1);
       }
+
+      group.matchdays.forEach(function (matchday) {
+        matchday.matches.forEach(function (match) {
+          if (typeof match.source === "undefined") {
+            match.source = match.completed ? "manual" : null;
+          }
+        });
+      });
     });
 
     recalculateCup(cup);
@@ -203,7 +234,7 @@
     return cup;
   }
 
-  function setMatchResult(cup, matchId, homeGoals, awayGoals) {
+  function setMatchResult(cup, matchId, homeGoals, awayGoals, source) {
     var parsedHome = Number(homeGoals);
     var parsedAway = Number(awayGoals);
 
@@ -211,26 +242,158 @@
       throw new Error("El resultado debe usar goles enteros iguales o mayores que 0.");
     }
 
-    var found = false;
+    var match = findMatch(cup, matchId);
+
+    if (!match) {
+      throw new Error("No se encontró el partido indicado.");
+    }
+
+    match.homeGoals = parsedHome;
+    match.awayGoals = parsedAway;
+    match.completed = true;
+    match.source = source || "manual";
+
+    return recalculateCup(cup);
+  }
+
+  function randomPoisson(lambda) {
+    var limit = Math.exp(-lambda);
+    var product = 1;
+    var count = 0;
+
+    do {
+      count += 1;
+      product *= Math.random();
+    } while (product > limit);
+
+    return count - 1;
+  }
+
+  function simulateScore(cup, homeTeam, awayTeam) {
+    var pointDifference = homeTeam.points - awayTeam.points;
+    var strengthShift = clamp(pointDifference * 0.055, -1.15, 1.15);
+    var homeExpected = 1.35 + strengthShift;
+    var awayExpected = 1.35 - strengthShift;
+
+    if (homeTeam.id === cup.hostId) {
+      homeExpected += 0.22;
+    }
+    if (awayTeam.id === cup.hostId) {
+      awayExpected += 0.22;
+    }
+
+    homeExpected = clamp(homeExpected, 0.25, 3.4);
+    awayExpected = clamp(awayExpected, 0.25, 3.4);
+
+    return {
+      homeGoals: randomPoisson(homeExpected),
+      awayGoals: randomPoisson(awayExpected)
+    };
+  }
+
+  function simulateMatch(cup, matchId) {
+    recalculateCup(cup);
+
+    var match = findMatch(cup, matchId);
+    if (!match) {
+      throw new Error("No se encontró el partido indicado.");
+    }
+    if (match.completed) {
+      throw new Error("Ese partido ya tiene resultado. Puedes editarlo manualmente si quieres cambiarlo.");
+    }
+
+    var homeTeam = findParticipant(cup, match.homeId);
+    var awayTeam = findParticipant(cup, match.awayId);
+    var score = simulateScore(cup, homeTeam, awayTeam);
+
+    setMatchResult(cup, match.id, score.homeGoals, score.awayGoals, "simulated");
+    return match;
+  }
+
+  function getGroupStageProgress(cup) {
+    var total = 0;
+    var completed = 0;
 
     cup.groups.forEach(function (group) {
       group.matchdays.forEach(function (matchday) {
         matchday.matches.forEach(function (match) {
-          if (match.id === matchId) {
-            match.homeGoals = parsedHome;
-            match.awayGoals = parsedAway;
-            match.completed = true;
-            found = true;
+          total += 1;
+          if (match.completed) {
+            completed += 1;
           }
         });
       });
     });
 
-    if (!found) {
-      throw new Error("No se encontró el partido indicado.");
+    return {
+      completed: completed,
+      total: total,
+      finished: total > 0 && completed === total
+    };
+  }
+
+  function findNextPendingMatch(cup) {
+    for (var day = 1; day <= 3; day += 1) {
+      for (var g = 0; g < cup.groups.length; g += 1) {
+        var matchday = cup.groups[g].matchdays[day - 1];
+        for (var m = 0; m < matchday.matches.length; m += 1) {
+          if (!matchday.matches[m].completed) {
+            return matchday.matches[m];
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  function simulateNextPendingMatch(cup) {
+    var match = findNextPendingMatch(cup);
+    if (!match) {
+      return null;
+    }
+    return simulateMatch(cup, match.id);
+  }
+
+  function simulateAllPendingGroupStage(cup) {
+    var simulated = 0;
+    var next = findNextPendingMatch(cup);
+
+    while (next) {
+      simulateMatch(cup, next.id);
+      simulated += 1;
+      next = findNextPendingMatch(cup);
     }
 
-    return recalculateCup(cup);
+    return simulated;
+  }
+
+  function getQualifiedTeams(cup) {
+    recalculateCup(cup);
+
+    if (!getGroupStageProgress(cup).finished) {
+      return [];
+    }
+
+    var qualified = [];
+
+    cup.groups.forEach(function (group) {
+      group.standings.slice(0, 2).forEach(function (standing, index) {
+        var team = findParticipant(cup, standing.id);
+        qualified.push({
+          group: group.name,
+          position: index + 1,
+          id: team.id,
+          name: team.name,
+          flag: team.flag,
+          points: team.points,
+          titles: team.titles || 0,
+          tablePoints: standing.tablePoints,
+          goalDifference: standing.goalDifference
+        });
+      });
+    });
+
+    return qualified;
   }
 
   function generateFirstCup(allTeams) {
@@ -278,6 +441,12 @@
     ensureCupData: ensureCupData,
     recalculateCup: recalculateCup,
     setMatchResult: setMatchResult,
-    findParticipant: findParticipant
+    simulateMatch: simulateMatch,
+    simulateNextPendingMatch: simulateNextPendingMatch,
+    simulateAllPendingGroupStage: simulateAllPendingGroupStage,
+    getGroupStageProgress: getGroupStageProgress,
+    getQualifiedTeams: getQualifiedTeams,
+    findParticipant: findParticipant,
+    findMatch: findMatch
   };
 }());
