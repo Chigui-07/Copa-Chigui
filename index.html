@@ -94,8 +94,26 @@
           </div>
           <span class="badge">Dieciseisavos</span>
         </div>
-        <p class="muted">Los dos primeros de cada grupo ya tienen su lugar en la fase de eliminación directa.</p>
+        <p class="muted">Los dos primeros de cada grupo ya tienen su lugar en la fase de eliminación directa. Cuando confirmes esta fase, los resultados de grupos quedarán bloqueados.</p>
         <div id="qualifiedGrid" class="qualified-grid"></div>
+        <div class="stage-actions">
+          <button id="createRoundOf32Button" class="primary-button" type="button">🏆 Crear dieciseisavos de final</button>
+        </div>
+      </section>
+
+      <section id="roundOf32Section" class="panel hidden">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">ELIMINACIÓN DIRECTA</p>
+            <h2>Dieciseisavos de final</h2>
+          </div>
+          <span id="roundOf32ProgressBadge" class="badge">0 / 16 partidos</span>
+        </div>
+        <p class="muted">Si un partido termina empatado, debe resolverse por penales. Ganar por penales cuenta como victoria completa para el ranking/fuerza.</p>
+        <div class="stage-actions">
+          <button id="simulateAllRoundOf32Button" class="primary-button" type="button">⚡ Simular dieciseisavos pendientes</button>
+        </div>
+        <div id="roundOf32Grid" class="knockout-grid"></div>
       </section>
     </section>
   </main>
