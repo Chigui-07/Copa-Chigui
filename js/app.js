@@ -5,6 +5,8 @@
   var tournamentScreen = document.getElementById("tournamentScreen");
   var form = document.getElementById("newUniverseForm");
   var newDrawButton = document.getElementById("newDrawButton");
+  var simulateNextButton = document.getElementById("simulateNextButton");
+  var simulateAllButton = document.getElementById("simulateAllButton");
 
   var playerNameInput = document.getElementById("playerName");
   var rivalNameInput = document.getElementById("rivalName");
@@ -16,6 +18,9 @@
   var groupsGrid = document.getElementById("groupsGrid");
   var groupStageList = document.getElementById("groupStageList");
   var participantCount = document.getElementById("participantCount");
+  var groupProgressBadge = document.getElementById("groupProgressBadge");
+  var qualifiedSection = document.getElementById("qualifiedSection");
+  var qualifiedGrid = document.getElementById("qualifiedGrid");
 
   var currentUniverse = null;
 
@@ -154,6 +159,12 @@
     return wrapper;
   }
 
+  function commitUniverseUpdate() {
+    currentUniverse.version = "0.0.4";
+    saveUniverse(currentUniverse);
+    renderUniverse(currentUniverse);
+  }
+
   function renderMatch(match, cup) {
     var home = getTeam(cup, match.homeId);
     var away = getTeam(cup, match.awayId);
@@ -201,10 +212,13 @@
     awayLabel.className = "match-team away-team";
     awayLabel.textContent = away.flag + " " + away.name;
 
+    var actions = document.createElement("div");
+    actions.className = "match-actions";
+
     var saveButton = document.createElement("button");
     saveButton.type = "button";
     saveButton.className = "match-save-button";
-    saveButton.textContent = match.completed ? "Actualizar" : "Guardar";
+    saveButton.textContent = match.completed ? "Actualizar" : "Guardar manual";
 
     saveButton.addEventListener("click", function () {
       if (homeInput.value === "" || awayInput.value === "") {
@@ -213,19 +227,35 @@
       }
 
       try {
-        window.CopaChiguiTournament.setMatchResult(currentUniverse.cup, match.id, Number(homeInput.value), Number(awayInput.value));
-        currentUniverse.version = "0.0.3";
-        saveUniverse(currentUniverse);
-        renderUniverse(currentUniverse);
+        window.CopaChiguiTournament.setMatchResult(currentUniverse.cup, match.id, Number(homeInput.value), Number(awayInput.value), "manual");
+        commitUniverseUpdate();
       } catch (error) {
         window.alert(error.message);
       }
     });
 
+    var simulateButton = document.createElement("button");
+    simulateButton.type = "button";
+    simulateButton.className = "match-simulate-button";
+    simulateButton.textContent = match.completed ? (match.source === "simulated" ? "🎲 Simulado" : "✓ Registrado") : "🎲 Simular";
+    simulateButton.disabled = match.completed;
+
+    simulateButton.addEventListener("click", function () {
+      try {
+        window.CopaChiguiTournament.simulateMatch(currentUniverse.cup, match.id);
+        commitUniverseUpdate();
+      } catch (error) {
+        window.alert(error.message);
+      }
+    });
+
+    actions.appendChild(saveButton);
+    actions.appendChild(simulateButton);
+
     row.appendChild(homeLabel);
     row.appendChild(score);
     row.appendChild(awayLabel);
-    row.appendChild(saveButton);
+    row.appendChild(actions);
     return row;
   }
 
@@ -272,6 +302,68 @@
     });
   }
 
+  function renderQualifiedTeams(universe) {
+    var qualified = window.CopaChiguiTournament.getQualifiedTeams(universe.cup);
+    qualifiedGrid.innerHTML = "";
+
+    if (!qualified.length) {
+      qualifiedSection.classList.add("hidden");
+      return;
+    }
+
+    qualifiedSection.classList.remove("hidden");
+
+    for (var i = 0; i < qualified.length; i += 2) {
+      var first = qualified[i];
+      var second = qualified[i + 1];
+      var card = document.createElement("article");
+      card.className = "qualified-card";
+
+      var title = document.createElement("h3");
+      title.textContent = first.group;
+      card.appendChild(title);
+
+      [first, second].forEach(function (entry) {
+        var row = document.createElement("div");
+        row.className = "qualified-row";
+
+        var position = document.createElement("span");
+        position.className = "qualified-position";
+        position.textContent = entry.position + "º";
+
+        var name = document.createElement("span");
+        name.className = "qualified-name";
+        name.textContent = entry.flag + " " + entry.name + starsFor(entry);
+
+        var points = document.createElement("span");
+        points.className = "qualified-points";
+        points.textContent = entry.points + " pts";
+
+        row.appendChild(position);
+        row.appendChild(name);
+        row.appendChild(points);
+        card.appendChild(row);
+      });
+
+      qualifiedGrid.appendChild(card);
+    }
+  }
+
+  function renderProgress(universe) {
+    var progress = window.CopaChiguiTournament.getGroupStageProgress(universe.cup);
+    groupProgressBadge.textContent = progress.completed + " / " + progress.total + " partidos";
+    simulateNextButton.disabled = progress.finished;
+    simulateAllButton.disabled = progress.finished;
+
+    if (progress.finished) {
+      simulateNextButton.textContent = "✅ Fase terminada";
+      simulateAllButton.textContent = "✅ 32 clasificados";
+    } else {
+      simulateNextButton.textContent = "🎲 Simular siguiente";
+      simulateAllButton.textContent = "⚡ Simular todos los pendientes";
+    }
+  }
+
   function renderUniverse(universe) {
     currentUniverse = universe;
     window.CopaChiguiTournament.ensureCupData(universe.cup);
@@ -285,7 +377,9 @@
     participantCount.textContent = universe.cup.participants.length + " equipos";
 
     renderDrawGroups(universe);
+    renderProgress(universe);
     renderGroupStage(universe);
+    renderQualifiedTeams(universe);
   }
 
   function saveUniverse(universe) {
@@ -300,7 +394,7 @@
     var cup = window.CopaChiguiTournament.generateFirstCup(window.COPA_CHIGUI_TEAMS);
 
     return {
-      version: "0.0.3",
+      version: "0.0.4",
       name: universeName,
       playerName: playerName,
       rivalName: rivalName,
@@ -340,9 +434,38 @@
     }
 
     currentUniverse.cup = window.CopaChiguiTournament.generateFirstCup(window.COPA_CHIGUI_TEAMS);
-    currentUniverse.version = "0.0.3";
-    saveUniverse(currentUniverse);
-    renderUniverse(currentUniverse);
+    commitUniverseUpdate();
+  });
+
+  simulateNextButton.addEventListener("click", function () {
+    if (!currentUniverse) {
+      return;
+    }
+
+    var match = window.CopaChiguiTournament.simulateNextPendingMatch(currentUniverse.cup);
+    if (match) {
+      commitUniverseUpdate();
+    }
+  });
+
+  simulateAllButton.addEventListener("click", function () {
+    if (!currentUniverse) {
+      return;
+    }
+
+    var progress = window.CopaChiguiTournament.getGroupStageProgress(currentUniverse.cup);
+    if (progress.finished) {
+      return;
+    }
+
+    var pending = progress.total - progress.completed;
+    var confirmation = window.confirm("¿Simular automáticamente los " + pending + " partidos pendientes de la fase de grupos?");
+    if (!confirmation) {
+      return;
+    }
+
+    window.CopaChiguiTournament.simulateAllPendingGroupStage(currentUniverse.cup);
+    commitUniverseUpdate();
   });
 
   try {
