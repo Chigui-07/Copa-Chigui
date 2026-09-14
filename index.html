@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Copa Chigui</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="hero">
+      <div class="trophy">🏆</div>
+      <div>
+        <p class="eyebrow">SIMULADOR DE TORNEOS</p>
+        <h1>Copa Chigui</h1>
+        <p class="subtitle">Escribe una nueva historia del fútbol.</p>
+      </div>
+    </header>
+
+    <section id="setupScreen" class="panel">
+      <h2>🌍 Nueva historia</h2>
+      <p class="muted">La Copa Chigui #1 comenzará desde cero. El anfitrión, los 64 participantes y los grupos serán aleatorios.</p>
+
+      <form id="newUniverseForm" class="form-grid">
+        <label>
+          Tu nombre
+          <input id="playerName" type="text" maxlength="24" placeholder="Chigui" required>
+        </label>
+
+        <label>
+          Nombre de tu rival
+          <input id="rivalName" type="text" maxlength="24" placeholder="Rival" required>
+        </label>
+
+        <label class="full-width">
+          Nombre del universo
+          <input id="universeName" type="text" maxlength="32" placeholder="Mi universo" required>
+        </label>
+
+        <button class="primary-button full-width" type="submit">🎲 Crear Copa Chigui #1</button>
+      </form>
+    </section>
+
+    <section id="tournamentScreen" class="hidden">
+      <div class="panel tournament-header">
+        <div>
+          <p class="eyebrow">COPA CHIGUI #1</p>
+          <h2 id="universeTitle">Universo</h2>
+          <p id="playersLabel" class="muted"></p>
+        </div>
+        <button id="newDrawButton" class="secondary-button" type="button">🔄 Nuevo sorteo</button>
+      </div>
+
+      <section class="panel host-card">
+        <span class="host-label">🏟️ ANFITRIÓN</span>
+        <div id="hostDisplay" class="host-team"></div>
+        <p class="muted">Todas las selecciones empiezan con <strong>100 puntos</strong>.</p>
+      </section>
+
+      <section class="panel">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">SORTEO OFICIAL</p>
+            <h2>16 grupos · 64 selecciones</h2>
+          </div>
+          <span id="participantCount" class="badge">64 equipos</span>
+        </div>
+        <div id="groupsGrid" class="groups-grid"></div>
+      </section>
+    </section>
+  </main>
+
+  <script src="js/teams.js"></script>
+  <script src="js/tournament.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
