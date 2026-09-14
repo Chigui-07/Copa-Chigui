@@ -1,34 +1,32 @@
 # Copa Chigui ⚽🏆
 
-**Copa Chigui** es un juego de simulación de torneos internacionales de selecciones. Cada partida crea una historia futbolística nueva desde cero: nuevos anfitriones, participantes, campeones, récords, rankings y rivalidades.
+**Copa Chigui** es un juego web de simulación de torneos internacionales de selecciones. Cada universo comienza desde cero y crea su propia historia: anfitriones, participantes, campeones, estrellas, récords, rankings y rivalidades.
 
-> La historia del juego comienza únicamente dentro de cada partida. No existe ningún campeón, ranking o torneo previo.
+> Dentro del juego no existe ninguna Copa anterior: la historia comienza únicamente cuando se crea una nueva partida.
 
 ## 🎮 Concepto principal
 
-El jugador crea un universo nuevo y compite contra un rival controlado por el juego en un sistema de predicciones mientras se disputan las Copas Chigui.
+Al comenzar un universo, el jugador elige:
 
-Al comenzar una partida se pedirá:
+- Su nombre.
+- El nombre de su rival controlado por el juego.
+- El nombre del universo o partida.
 
-- Nombre del jugador.
-- Nombre del rival/bot.
-- Nombre del universo o partida.
-
-El título del juego no hará referencia a IA ni a ChatGPT; el rival será simplemente otro participante dentro de la experiencia.
+El título del juego no hace referencia a IA ni a ChatGPT. El rival es simplemente el segundo participante del sistema de predicciones.
 
 ## 🌍 Copa Chigui #1
 
-La primera Copa será generada **completamente desde cero**.
+La primera Copa será generada completamente al azar:
 
-- 🎲 El anfitrión será elegido aleatoriamente entre las selecciones disponibles.
-- 🎲 Se elegirán 64 selecciones de forma aleatoria.
-- ✅ El anfitrión estará incluido obligatoriamente entre las 64.
-- 🎲 Las 64 selecciones se sortearán aleatoriamente en 16 grupos de 4.
-- 🏆 No existirá campeón defensor.
-- 📊 Todas las selecciones comenzarán con 100 puntos de ranking.
-- 📜 No habrá historial previo.
+- 🎲 Anfitrión aleatorio.
+- 🎲 64 selecciones aleatorias.
+- ✅ El anfitrión siempre queda incluido entre las 64.
+- 🎲 Sorteo aleatorio de 16 grupos de 4.
+- 🏆 No existe campeón defensor.
+- 📊 Todas las selecciones comienzan con 100 puntos.
+- 📜 No existe historial previo.
 
-Los resultados de los partidos no estarán escritos previamente: serán producidos por el sistema de simulación del juego y podrán incluir sorpresas, empates y goleadas.
+Los resultados no estarán prefijados. El simulador generará victorias, empates, derrotas, sorpresas y goleadas.
 
 ## 🏆 Formato base
 
@@ -36,7 +34,6 @@ Los resultados de los partidos no estarán escritos previamente: serán producid
 - 16 grupos de 4.
 - 3 jornadas por grupo.
 - Los 2 mejores de cada grupo avanzan.
-- 32 selecciones pasan a eliminación directa.
 - Dieciseisavos de final.
 - Octavos de final.
 - Cuartos de final.
@@ -44,69 +41,75 @@ Los resultados de los partidos no estarán escritos previamente: serán producid
 - Partido por el tercer puesto.
 - Final.
 
-A partir de la Copa #2, el campeón vigente tendrá clasificación automática. El resto de plazas y el nuevo anfitrión se volverán a generar según las reglas del juego.
+Desde la Copa #2, el campeón vigente clasifica automáticamente. El resto de plazas y el nuevo anfitrión se generan según las reglas de la nueva edición.
 
 ## ⭐ Títulos y banderas
 
-El juego utilizará banderas para representar a las selecciones.
+Las selecciones se representan con banderas.
 
-Cada Copa Chigui ganada añadirá una estrella al historial visual de la selección.
+Cada Copa Chigui ganada añade una estrella visual:
 
-Ejemplos:
+- 🇯🇵⭐ = 1 título.
+- 🇧🇷⭐⭐⭐ = 3 títulos.
+- Para cantidades grandes podrá usarse `⭐ × 7`.
 
-- 🇯🇵⭐ = 1 Copa Chigui.
-- 🇧🇷⭐⭐⭐ = 3 Copas Chigui.
-- Cuando una selección tenga muchas estrellas, la interfaz podrá mostrar un formato compacto como `⭐ × 7`.
+## 📊 Ranking y fuerza
 
-## 📊 Ranking Mundial Chigui
+En Copa Chigui, **ranking y fuerza nacen juntos**. No se utilizará una fuerza basada en el fútbol real.
 
-Todas las selecciones comenzarán con **100 puntos**.
+Todas las selecciones comienzan exactamente iguales:
 
-El ranking será persistente dentro de cada universo y cambiará según los resultados de los partidos.
+`100 puntos`
+
+Regla inicial:
+
+| Resultado | Cambio |
+|---|---:|
+| Victoria | +2 pts |
+| Empate | 0 pts |
+| Derrota | -2 pts |
+
+Por lo tanto, las propias Copas crearán las potencias de cada universo. Una selección que gane mucho se volverá progresivamente más fuerte en el simulador; una que acumule derrotas perderá fuerza.
+
+La diferencia de goles no modifica directamente los puntos: ganar 1-0 y ganar 7-0 cuentan como una victoria para este sistema. Las goleadas sí quedan guardadas en estadísticas y récords.
 
 La interfaz mostrará:
 
 - Posición actual.
 - Posición anterior.
-- Subidas y bajadas de puestos.
+- Puestos ganados o perdidos.
 - Puntos actuales.
-- Puntos ganados o perdidos.
+- Cambio de puntos.
 - Mejor posición histórica.
 
 Ejemplo:
 
-`🇬🇹 Guatemala — #8 → #5 ⬆️ +3 | 112 pts → 126 pts (+14)`
-
-La fuerza interna utilizada por el simulador será independiente de la posición del ranking. El ranking representa el rendimiento conseguido dentro de la historia de esa partida.
+`🇬🇹 Guatemala — #8 → #5 ⬆️ +3 | 106 pts → 110 pts (+4)`
 
 ### Penales
 
-Ganar una eliminatoria por penales contará como victoria para el sistema de ranking del juego. La tanda también se guardará de forma separada en las estadísticas del partido para conservar el resultado del tiempo reglamentario/prórroga y el ganador de la serie.
+Ganar una eliminatoria por penales cuenta como victoria completa para el sistema; perderla cuenta como derrota. Además se guardarán por separado el resultado antes de la tanda y el marcador de penales.
 
 ## ⚽ Sistema de partidos
 
-Cada selección tendrá una fuerza interna para ayudar a generar resultados creíbles sin hacer que el equipo más fuerte gane siempre.
+El simulador utilizará principalmente:
 
-El simulador podrá considerar:
-
-- Fuerza base.
-- Forma durante el torneo.
-- Localía del anfitrión.
+- Puntos/fuerza actual de ambas selecciones.
+- Forma reciente.
+- Pequeña ventaja de localía para el anfitrión.
 - Azar controlado.
+
+El equipo con más puntos tendrá mayor probabilidad de ganar, pero nunca una victoria garantizada.
 
 Modos previstos:
 
-1. **Simulación rápida:** muestra directamente el resultado.
-2. **Resultado manual:** el usuario introduce un resultado obtenido fuera del juego.
-3. **Simulación visual:** futura representación minuto a minuto.
+1. **Simulación rápida:** genera directamente el resultado.
+2. **Resultado manual:** el usuario introduce un resultado obtenido externamente.
+3. **Simulación visual:** futura representación del partido minuto a minuto.
 
 ## 🎯 Sistema de predicciones
 
-Antes de cada partido, el jugador y su rival realizan una predicción.
-
-Las predicciones deben bloquearse antes de generar o introducir el resultado para evitar modificaciones posteriores.
-
-Puntuación propuesta:
+Antes de cada partido, jugador y rival realizan una predicción. Ambas quedan bloqueadas antes de conocer el resultado.
 
 | Predicción | Puntos |
 |---|---:|
@@ -114,45 +117,30 @@ Puntuación propuesta:
 | Ganador o empate correcto | 1 |
 | Incorrecta | 0 |
 
-También se registrará por separado el número de marcadores exactos.
+También se guardará el número de marcadores exactos.
 
-Cada Copa tendrá su propia competencia de predicciones, pero el juego guardará un historial global de Copas ganadas por cada participante.
+Cada Copa reinicia el marcador de predicciones, pero el universo conservará cuántas competiciones de predicciones ganó cada participante.
 
 ## 🪙 Chigui Coins
 
-El juego tendrá una moneda virtual llamada **Chigui Coins**.
+Moneda completamente virtual, sin valor real y sin compra o retiro con dinero real.
 
-No tendrá valor real, no podrá comprarse con dinero real y no podrá retirarse o intercambiarse por dinero.
-
-Se podrá ganar mediante:
+Se obtendrá por:
 
 - Predicciones correctas.
 - Marcadores exactos.
-- Rachas de aciertos.
-- Predicciones difíciles o sorpresas.
+- Rachas.
+- Sorpresas acertadas.
 - Completar Copas.
-- Logros especiales.
+- Logros.
 
-Las monedas se usarán para personalización y elementos cosméticos, no para dar ventajas competitivas.
-
-Posibles usos:
-
-- Temas de interfaz.
-- Fondos.
-- Animaciones de sorteo.
-- Marcos y decoraciones.
-- Sala de trofeos.
-- Elementos visuales del perfil.
+Se gastará únicamente en contenido cosmético como temas, fondos, animaciones, marcos, decoraciones y elementos de la sala de trofeos.
 
 ## 🔥 Predicción de confianza
 
-En determinados momentos el jugador podrá marcar una predicción como especial o de alta confianza.
+En determinados momentos podrá marcarse una predicción como especial. Si se acierta habrá recompensa adicional; si falla no se pierden monedas.
 
-Si acierta, obtiene una recompensa adicional. Si falla, simplemente pierde esa oportunidad; no se quitarán monedas.
-
-## 🏅 Premios de cada Copa
-
-Premios iniciales previstos:
+## 🏅 Premios de Copa
 
 - 🏆 Campeón.
 - 🥈 Subcampeón.
@@ -163,67 +151,51 @@ Premios iniciales previstos:
 - 😱 Mayor sorpresa.
 - 🌟 Selección revelación.
 
-En versiones futuras, si se añaden jugadores individuales, podrán incorporarse premios como goleador, mejor portero y mejor jugador.
-
 ## 📚 Historial permanente
 
-Cada universo guardará toda su historia.
-
-Por Copa:
+Cada universo guardará por Copa:
 
 - Anfitrión.
 - Participantes.
 - Grupos.
 - Resultados.
 - Eliminatorias.
-- Campeón, subcampeón y tercero.
+- Podio.
 - Premios.
 - Ranking posterior.
 - Predicciones.
 - Récords.
 
-Por selección:
+Y por selección:
 
 - Participaciones.
 - Títulos.
+- Estrellas.
 - Mejor actuación.
-- Partidos jugados.
-- Victorias, empates y derrotas.
-- Goles a favor y en contra.
+- PJ, G, E y P.
+- GF y GC.
 - Ranking actual.
 - Mejor ranking histórico.
-- Historial de estrellas/títulos.
 
-## 💾 Universos y partidas
+## 💾 Universos
 
-El juego podrá admitir varios universos independientes.
+Cada universo será independiente y tendrá sus propios campeones, ranking, monedas, historial, récords y sorteos.
 
-Cada universo tendrá sus propios:
+## 🌱 Semillas
 
-- Campeones.
-- Rankings.
-- Historiales.
-- Chigui Coins.
-- Predicciones.
-- Récords.
-- Sorteos.
+Cada edición podrá guardar una semilla para recrear exactamente su anfitrión, participantes y sorteo de grupos.
 
-Nada de un universo deberá modificar a otro.
+## 🧱 Tecnología
 
-## 🌱 Semillas de generación
-
-Cada edición podrá guardar una semilla de generación para recrear un sorteo concreto de anfitrión, participantes y grupos.
-
-## 🧱 Tecnología inicial
-
-Primera versión prevista como juego web:
+Primera versión web sin dependencias externas:
 
 - HTML.
 - CSS.
 - JavaScript.
+- `localStorage` para los primeros guardados.
 - GitHub Pages para publicación y pruebas.
 
-Estructura propuesta:
+Estructura inicial:
 
 ```text
 Copa-Chigui/
@@ -231,50 +203,51 @@ Copa-Chigui/
 ├─ css/
 │  └─ style.css
 ├─ js/
-│  ├─ app.js
 │  ├─ teams.js
 │  ├─ tournament.js
-│  └─ ranking.js
-├─ assets/
-│  ├─ flags/
-│  └─ ui/
-└─ data/
-   └─ teams.json
+│  └─ app.js
+└─ README.md
 ```
 
-## 🗺️ Ruta inicial de desarrollo
+## 🗺️ Ruta de desarrollo
 
-1. Crear base de selecciones.
-2. Generar anfitrión aleatorio.
-3. Seleccionar 64 participantes.
+1. Crear base inicial de selecciones.
+2. Crear pantalla de nuevo universo.
+3. Elegir anfitrión y 64 participantes aleatorios.
 4. Sortear 16 grupos.
-5. Crear sistema de jornadas y tablas.
+5. Crear jornadas y tablas.
 6. Añadir resultados manuales y simulados.
 7. Crear eliminatorias.
-8. Implementar ranking mundial.
-9. Implementar predicciones jugador vs rival.
+8. Implementar cambios de ranking/fuerza.
+9. Implementar predicciones.
 10. Guardar historial y estadísticas.
 11. Añadir Chigui Coins y premios.
-12. Mejorar interfaz, animaciones y presentación.
+12. Mejorar interfaz y animaciones.
 
 ---
 
 # 📝 Bitácora
 
-## v0.0.1 — Inicio del proyecto
+## v0.0.1 — Diseño inicial
 
 - ✅ Repositorio creado.
 - ✅ Nombre definido: **Copa Chigui**.
-- ✅ Nueva historia desde cero para cada universo.
-- ✅ Copa Chigui #1 con anfitrión, participantes y grupos aleatorios.
-- ✅ 64 selecciones por edición.
-- ✅ Ranking inicial de 100 puntos para todas las selecciones.
-- ✅ Estrellas junto a la bandera para representar títulos.
-- ✅ Jugador y rival con nombres personalizables.
-- ✅ Sistema de predicciones planificado.
-- ✅ Chigui Coins definidas como moneda virtual cosmética.
-- ✅ Historial, premios y múltiples universos planificados.
+- ✅ Historia independiente desde cero por universo.
+- ✅ Copa #1 totalmente aleatoria.
+- ✅ 64 selecciones y 16 grupos.
+- ✅ Ranking inicial de 100 puntos.
+- ✅ Banderas + estrellas para títulos.
+- ✅ Jugador y rival personalizables.
+- ✅ Predicciones, Chigui Coins, premios e historial planificados.
 
-### Próximo objetivo
+## v0.0.2 — Inicio de programación
 
-Diseñar la base de datos de selecciones (`teams.json`) y definir exactamente cómo funcionará la fuerza inicial y la simulación de partidos antes de programar la primera Copa completa.
+- ✅ Ranking y fuerza unificados.
+- ✅ Todas las selecciones comienzan en 100.
+- ✅ Victoria `+2`, empate `0`, derrota `-2`.
+- ✅ Penales cuentan como victoria/derrota completa.
+- 🚧 Primera pantalla y generación de Copa #1 en desarrollo.
+
+### Objetivo actual
+
+Conseguir que una nueva partida pueda introducir los nombres del jugador/rival, generar un anfitrión, elegir 64 selecciones y mostrar los 16 grupos de la primera Copa Chigui.
