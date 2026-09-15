@@ -23,7 +23,7 @@
   font: inherit;
   font-weight: 800;
   cursor: pointer;
-  transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease, color 0.16s ease;
+  transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease, color 0.18s ease;
 }
 
 .game-nav-button:hover:not(:disabled) {
@@ -43,8 +43,24 @@
   cursor: not-allowed;
 }
 
-.navigation-hidden {
+.navigation-hidden,
+.mode-control-hidden {
   display: none !important;
+}
+
+.navigation-enter {
+  animation: navigation-enter 0.22s ease both;
+}
+
+@keyframes navigation-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .navigation-empty-state {
@@ -61,6 +77,122 @@
   margin-bottom: 8px;
 }
 
+.cup-table-scroll {
+  margin-top: 18px;
+}
+
+.cup-overall-table {
+  min-width: 820px;
+}
+
+.cup-text-cell {
+  text-align: left !important;
+  font-weight: 800;
+}
+
+.cup-podium-row {
+  background: rgba(89, 210, 139, 0.08);
+}
+
+.knockout-bracket-shell {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  overflow-x: auto;
+  padding: 2px 2px 12px;
+  scroll-snap-type: x proximity;
+}
+
+.knockout-round-column {
+  flex: 0 0 min(360px, calc(100vw - 42px));
+  scroll-snap-align: start;
+  margin-bottom: 0;
+}
+
+.knockout-round-column .knockout-grid {
+  grid-template-columns: 1fr;
+}
+
+.simulation-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(5, 10, 20, 0.82);
+  backdrop-filter: blur(10px);
+  animation: navigation-enter 0.18s ease both;
+}
+
+.simulation-card {
+  width: min(440px, 100%);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  padding: 28px;
+  text-align: center;
+  background: #111a2e;
+  box-shadow: var(--shadow);
+}
+
+.simulation-ball {
+  width: 70px;
+  height: 70px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  background: rgba(89, 210, 139, 0.1);
+  font-size: 2rem;
+  animation: simulation-ball 0.7s ease-in-out infinite alternate;
+}
+
+@keyframes simulation-ball {
+  from {
+    transform: translateX(-10px) rotate(-12deg);
+  }
+  to {
+    transform: translateX(10px) rotate(12deg);
+  }
+}
+
+.simulation-clock {
+  margin: 6px 0 14px;
+  color: var(--accent);
+  font-size: 2rem;
+  font-weight: 900;
+}
+
+.simulation-track {
+  height: 10px;
+  overflow: hidden;
+  margin: 0 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: #0b1324;
+}
+
+.simulation-progress {
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+  transition: width 0.3s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navigation-enter,
+  .simulation-overlay,
+  .simulation-ball {
+    animation: none;
+  }
+
+  .simulation-progress,
+  .game-nav-button {
+    transition: none;
+  }
+}
+
 @media (max-width: 620px) {
   .game-navigation {
     top: 4px;
@@ -74,5 +206,13 @@
   .game-nav-button {
     padding: 9px 11px;
     font-size: 0.82rem;
+  }
+
+  .knockout-bracket-shell {
+    gap: 10px;
+  }
+
+  .knockout-round-column {
+    flex-basis: calc(100vw - 30px);
   }
 }
