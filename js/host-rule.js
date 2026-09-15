@@ -5,6 +5,7 @@
   }
 
   var originalGenerateFirstCup = api.generateFirstCup;
+  var originalEnsureCupData = api.ensureCupData;
 
   function blankStanding(team) {
     return {
@@ -28,8 +29,7 @@
     group.standings = group.teams.map(blankStanding);
   }
 
-  api.generateFirstCup = function (allTeams) {
-    var cup = originalGenerateFirstCup(allTeams);
+  function placeHostInA1(cup) {
     if (!cup || !cup.groups || !cup.groups.length || !cup.hostId) {
       return cup;
     }
@@ -53,24 +53,58 @@
       return cup;
     }
 
-    if (hostGroupIndex === 0 && hostSlotIndex === 0) {
-      return cup;
-    }
+    if (hostGroupIndex !== 0 || hostSlotIndex !== 0) {
+      var hostGroup = cup.groups[hostGroupIndex];
+      var hostTeam = hostGroup.teams[hostSlotIndex];
+      var displacedTeam = groupA.teams[0];
 
-    var hostGroup = cup.groups[hostGroupIndex];
-    var hostTeam = hostGroup.teams[hostSlotIndex];
-    var displacedTeam = groupA.teams[0];
+      groupA.teams[0] = hostTeam;
+      hostGroup.teams[hostSlotIndex] = displacedTeam;
 
-    groupA.teams[0] = hostTeam;
-    hostGroup.teams[hostSlotIndex] = displacedTeam;
-
-    rebuildGroup(groupA, 0);
-    if (hostGroupIndex !== 0) {
-      rebuildGroup(hostGroup, hostGroupIndex);
+      rebuildGroup(groupA, 0);
+      if (hostGroupIndex !== 0) {
+        rebuildGroup(hostGroup, hostGroupIndex);
+      }
     }
 
     cup.hostSlot = "A1";
     return cup;
+  }
+
+  function keepHostFirstBeforeKickoff(cup) {
+    if (!cup || !cup.groups || !cup.groups[0] || !Array.isArray(cup.groups[0].standings)) {
+      return cup;
+    }
+
+    var standings = cup.groups[0].standings;
+    var noMatchPlayed = standings.every(function (row) {
+      return !row.played;
+    });
+    if (!noMatchPlayed) {
+      return cup;
+    }
+
+    var hostIndex = standings.findIndex(function (row) {
+      return row.id === cup.hostId;
+    });
+    if (hostIndex > 0) {
+      var hostStanding = standings.splice(hostIndex, 1)[0];
+      standings.unshift(hostStanding);
+    }
+    return cup;
+  }
+
+  api.generateFirstCup = function (allTeams) {
+    var cup = originalGenerateFirstCup(allTeams);
+    placeHostInA1(cup);
+    keepHostFirstBeforeKickoff(cup);
+    return cup;
+  };
+
+  api.ensureCupData = function (cup) {
+    var result = originalEnsureCupData(cup);
+    keepHostFirstBeforeKickoff(result);
+    return result;
   };
 
   api.__hostAlwaysA1 = true;
