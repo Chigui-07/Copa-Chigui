@@ -1,0 +1,78 @@
+.game-navigation {
+  position: sticky;
+  top: 10px;
+  z-index: 20;
+  padding: 10px;
+  backdrop-filter: blur(14px);
+}
+
+.game-navigation-buttons {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.game-nav-button {
+  flex: 0 0 auto;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 14px;
+  background: #0e1528;
+  color: var(--muted);
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease, color 0.16s ease;
+}
+
+.game-nav-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.game-nav-button.active {
+  background: rgba(89, 210, 139, 0.14);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.game-nav-future {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.navigation-hidden {
+  display: none !important;
+}
+
+.navigation-empty-state {
+  text-align: center;
+  padding: 42px 22px;
+}
+
+.navigation-empty-icon {
+  margin-bottom: 10px;
+  font-size: 2.4rem;
+}
+
+.navigation-empty-state h2 {
+  margin-bottom: 8px;
+}
+
+@media (max-width: 620px) {
+  .game-navigation {
+    top: 4px;
+    padding: 8px;
+  }
+
+  .game-navigation-buttons {
+    gap: 6px;
+  }
+
+  .game-nav-button {
+    padding: 9px 11px;
+    font-size: 0.82rem;
+  }
+}
