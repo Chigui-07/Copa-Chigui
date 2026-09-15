@@ -1,0 +1,363 @@
+@media (max-width: 760px) {
+  body {
+    -webkit-text-size-adjust: 100%;
+    overflow-x: hidden;
+  }
+
+  .app-shell {
+    width: 100%;
+    max-width: none;
+    padding: 10px 8px 96px;
+  }
+
+  .hero {
+    gap: 10px;
+    margin: 4px 4px 14px;
+  }
+
+  .hero .trophy {
+    width: 50px;
+    height: 50px;
+    flex: 0 0 50px;
+    border-radius: 14px;
+    font-size: 26px;
+  }
+
+  .hero h1 {
+    font-size: clamp(1.7rem, 9vw, 2.4rem);
+  }
+
+  .hero .subtitle {
+    font-size: 0.82rem;
+  }
+
+  .panel {
+    margin-bottom: 10px;
+    border-radius: 16px;
+    padding: 14px;
+  }
+
+  .main-menu-screen {
+    width: 100%;
+  }
+
+  .main-menu-grid {
+    gap: 9px;
+  }
+
+  .main-menu-button {
+    min-height: 76px;
+    border-radius: 14px;
+    padding: 12px;
+  }
+
+  .main-menu-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    font-size: 1.3rem;
+  }
+
+  .game-navigation {
+    position: fixed;
+    top: auto;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 80;
+    margin: 0;
+    border-radius: 0;
+    border-width: 1px 0 0;
+    padding: 7px 7px calc(7px + env(safe-area-inset-bottom));
+    background: rgba(11, 16, 32, 0.96);
+    backdrop-filter: blur(18px);
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.28);
+  }
+
+  .game-navigation-buttons {
+    gap: 5px;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+  }
+
+  .game-nav-button {
+    min-height: 44px;
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    border-radius: 11px;
+    padding: 8px 10px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+
+  #tournamentScreen {
+    padding-bottom: 18px;
+  }
+
+  .tournament-header,
+  .section-heading {
+    gap: 10px;
+  }
+
+  .tournament-header .secondary-button,
+  .stage-actions .primary-button,
+  .stage-actions .secondary-button {
+    min-height: 46px;
+  }
+
+  .host-team {
+    font-size: clamp(1.35rem, 7vw, 2rem);
+  }
+
+  .groups-grid,
+  .matchdays,
+  .qualified-grid,
+  .knockout-grid {
+    gap: 9px;
+  }
+
+  .group-card,
+  .qualified-card,
+  .knockout-card,
+  .stage-group {
+    border-radius: 13px;
+  }
+
+  .team-row {
+    min-height: 43px;
+    padding: 9px 10px;
+  }
+
+  .stage-group-summary {
+    min-height: 46px;
+    padding: 12px;
+  }
+
+  .stage-group-content {
+    gap: 12px;
+    padding: 9px;
+  }
+
+  .standings-table {
+    min-width: 650px;
+    font-size: 0.78rem;
+  }
+
+  .standings-table th,
+  .standings-table td {
+    padding: 8px 7px;
+  }
+
+  .matchday-card {
+    padding: 9px;
+  }
+
+  .match-row {
+    gap: 5px;
+    padding: 9px 0;
+  }
+
+  .score-entry {
+    gap: 3px;
+  }
+
+  .goal-input,
+  .penalty-input {
+    min-height: 38px;
+    font-size: 16px;
+  }
+
+  .ranking-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .ranking-search {
+    min-height: 46px;
+    font-size: 16px;
+  }
+
+  .ranking-table-wrap,
+  .table-scroll,
+  .competition-table-wrap,
+  .cup-table-scroll {
+    width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .competition-dashboard {
+    margin-inline: -14px;
+    border-radius: 0;
+  }
+
+  .competition-titlebar {
+    gap: 12px;
+    padding: 14px 12px;
+  }
+
+  .competition-titlebar h2 {
+    font-size: 1.65rem;
+  }
+
+  .competition-title-actions {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .competition-title-actions .secondary-button {
+    width: auto;
+    min-width: 0;
+    min-height: 42px;
+    padding: 8px 6px;
+    font-size: 0.72rem;
+  }
+
+  .competition-phase-tabs {
+    position: sticky;
+    top: 0;
+    z-index: 25;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+  }
+
+  .competition-phase-button {
+    flex-basis: 112px;
+    min-height: 48px;
+    scroll-snap-align: start;
+    padding: 7px 8px;
+    font-size: 0.69rem;
+  }
+
+  .competition-layout {
+    min-height: 0;
+  }
+
+  .competition-section-title {
+    min-height: 52px;
+    padding: 11px 12px;
+    font-size: 0.84rem;
+  }
+
+  .competition-selector {
+    grid-template-columns: 42px minmax(0, 1fr) 42px;
+    min-height: 52px;
+    padding: 6px 9px;
+  }
+
+  .competition-selector button {
+    min-height: 40px;
+    padding: 5px;
+  }
+
+  .competition-match-list {
+    max-height: none;
+  }
+
+  .competition-match-line {
+    min-height: 46px;
+    gap: 6px;
+    padding: 7px 9px;
+  }
+
+  .competition-match-team {
+    font-size: 0.75rem;
+  }
+
+  .competition-match-score {
+    min-width: 44px;
+    font-size: 0.78rem;
+  }
+
+  .competition-table {
+    min-width: 520px;
+    font-size: 0.76rem;
+  }
+
+  .competition-table th,
+  .competition-table td {
+    padding: 9px 6px;
+  }
+
+  .competition-best-team {
+    grid-template-columns: 1fr auto;
+    gap: 7px;
+    margin: 10px;
+    padding: 11px;
+  }
+
+  .competition-best-team span {
+    grid-column: 1 / -1;
+  }
+
+  .competition-next-card {
+    min-height: 210px;
+    padding: 16px 12px;
+  }
+
+  .competition-primary-action {
+    width: calc(100% - 20px);
+    min-height: 50px;
+    margin: 10px;
+  }
+
+  .competition-ko-card {
+    border-width: 2px;
+  }
+
+  .competition-ko-team {
+    grid-template-columns: minmax(0, 1fr) 54px;
+    min-height: 42px;
+  }
+
+  .competition-ko-name {
+    padding: 9px 8px;
+    font-size: 0.78rem;
+  }
+
+  .simulation-overlay {
+    padding: 10px;
+  }
+
+  .simulation-card {
+    border-radius: 17px;
+    padding: 20px 14px;
+  }
+
+  .menu-return-bar {
+    gap: 10px;
+  }
+}
+
+@media (max-width: 430px) {
+  .app-shell {
+    padding-inline: 5px;
+  }
+
+  .panel {
+    padding: 12px;
+  }
+
+  .eyebrow {
+    font-size: 0.68rem;
+  }
+
+  .badge {
+    padding: 7px 9px;
+    font-size: 0.76rem;
+  }
+
+  .competition-dashboard {
+    margin-inline: -12px;
+  }
+
+  .competition-title-actions .secondary-button {
+    font-size: 0.66rem;
+  }
+
+  .game-nav-button {
+    padding-inline: 9px;
+  }
+}
