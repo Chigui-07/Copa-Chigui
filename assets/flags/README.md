@@ -1,13 +1,20 @@
 # Banderas
 
-Esta carpeta está reservada para las imágenes de banderas de **Copa Chigui**.
+Esta carpeta contiene las imágenes de banderas de **Copa Chigui**.
 
-Cuando se añadan los archivos, usaremos preferentemente el ID de tres letras de cada selección para mantener una convención simple, por ejemplo:
+## Convención de nombres
 
-- `GUA.png` — Guatemala
-- `JPN.png` — Japón
-- `BRA.png` — Brasil
-- `MHL.png` — Islas Marshall
-- `ASA.png` — Samoa Americana
+Los archivos se nombran con el nombre de la selección en español, en mayúsculas, sin tildes y con extensión `.png`.
 
-También podemos usar SVG si las banderas que se entreguen vienen en ese formato. La interfaz todavía usa emojis como respaldo hasta conectar estas imágenes.
+Ejemplos:
+
+- `GUATEMALA.png`
+- `MEXICO.png`
+- `BRASIL.png`
+- `REPUBLICA DOMINICANA.png`
+- `ANTIGUA Y BARBUDA.png`
+- `ISLAS MARSHALL.png`
+
+La interfaz intenta cargar automáticamente `assets/flags/NOMBRE DEL PAIS.png`. Si todavía no existe la imagen de una selección, se muestra su emoji de bandera como respaldo, por lo que se pueden ir añadiendo continentes poco a poco sin romper el juego.
+
+Las imágenes ya añadidas pueden utilizarse en fase de grupos, competición, eliminatorias y ranking.
