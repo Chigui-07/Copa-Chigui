@@ -392,14 +392,16 @@
       return;
     }
     var edition = Number(universe.cup.edition) || 1;
+    var desiredHeader = "COPA CHIGUI #" + edition;
     var headerEyebrow = document.querySelector(".tournament-header .eyebrow");
-    if (headerEyebrow) {
-      headerEyebrow.textContent = "COPA CHIGUI #" + edition;
+    if (headerEyebrow && headerEyebrow.textContent !== desiredHeader) {
+      headerEyebrow.textContent = desiredHeader;
     }
 
+    var desiredChampion = "🏆 COPA CHIGUI #" + edition + " FINALIZADA";
     var championLabel = document.querySelector("#championSection .host-label");
-    if (championLabel && universe.cup.completed) {
-      championLabel.textContent = "🏆 COPA CHIGUI #" + edition + " FINALIZADA";
+    if (championLabel && universe.cup.completed && championLabel.textContent !== desiredChampion) {
+      championLabel.textContent = desiredChampion;
     }
 
     var newDraw = document.getElementById("newDrawButton");
@@ -408,8 +410,9 @@
     }
 
     var competitionSubtitle = document.getElementById("competitionSubtitle");
-    if (competitionSubtitle && competitionSubtitle.textContent.indexOf("Copa Chigui #") === -1) {
-      competitionSubtitle.textContent = "Copa Chigui #" + edition + " · " + (universe.cup.mode === "manual" ? "Modo manual" : "Modo simulado");
+    var desiredSubtitle = "Copa Chigui #" + edition + " · " + (universe.cup.mode === "manual" ? "Modo manual" : "Modo simulado");
+    if (competitionSubtitle && competitionSubtitle.textContent.indexOf("Copa Chigui #") === -1 && competitionSubtitle.textContent !== desiredSubtitle) {
+      competitionSubtitle.textContent = desiredSubtitle;
     }
   }
 
