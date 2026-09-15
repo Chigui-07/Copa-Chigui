@@ -11,6 +11,7 @@ Al comenzar un universo, el jugador elige:
 - Su nombre.
 - El nombre de su rival controlado por el juego.
 - El nombre del universo o partida.
+- El modo de la Copa: **manual** o **simulada**.
 
 El título del juego no hace referencia a IA ni a ChatGPT. El rival es simplemente el segundo participante del sistema de predicciones.
 
@@ -26,7 +27,7 @@ La primera Copa se genera completamente al azar:
 - 📊 Todas las selecciones comienzan con 100 puntos.
 - 📜 No existe historial previo.
 
-Los resultados no están prefijados. El simulador puede producir victorias, empates, derrotas, sorpresas y goleadas.
+Los resultados no están prefijados. En modo simulado, el juego puede producir victorias, empates, derrotas, sorpresas y goleadas. En modo manual, el jugador registra cada resultado.
 
 ## 🏆 Formato base
 
@@ -87,6 +88,18 @@ Por lo tanto, las propias Copas crean las potencias de cada universo. Una selecc
 
 La diferencia de goles no modifica directamente los puntos: ganar 1-0 y ganar 7-0 cuentan como una victoria para este sistema. Las goleadas sí quedan guardadas en estadísticas y récords.
 
+### Bonos por podio
+
+Al completar una Copa se entregan puntos adicionales de fuerza/ranking:
+
+| Posición | Bono |
+|---|---:|
+| 🥇 Campeón | +6 pts |
+| 🥈 Subcampeón | +4 pts |
+| 🥉 Tercer lugar | +2 pts |
+
+Estos puntos se suman a los cambios obtenidos por los resultados de los partidos.
+
 La interfaz del ranking completo deberá mostrar:
 
 - Posición actual.
@@ -114,11 +127,14 @@ El simulador utiliza:
 
 El equipo con más puntos tiene mayor probabilidad de obtener un buen resultado, pero nunca una victoria garantizada.
 
-Modos previstos:
+### Modos de Copa
 
-1. **Simulación rápida:** genera directamente el resultado.
-2. **Resultado manual:** el usuario introduce un resultado obtenido externamente.
-3. **Simulación visual:** futura representación del partido minuto a minuto.
+Al crear la Copa se elige uno de dos modos y queda fijado durante esa edición:
+
+1. **✍️ Manual:** todos los resultados se escriben manualmente. Los botones de simulación quedan desactivados.
+2. **🎮 Simulada:** todos los resultados los genera el juego. La edición manual queda desactivada.
+
+Para el modo simulado se planea añadir un **minijuego opcional** que permita vivir los partidos sin reemplazar la lógica principal del simulador.
 
 ## 📋 Fase de grupos
 
@@ -139,8 +155,6 @@ Desempates provisionales:
 
 Los dos primeros aparecen marcados como puestos de clasificación. Cuando terminan los 96 partidos, el juego muestra automáticamente las 32 selecciones clasificadas.
 
-La fase de grupos permite registrar resultados manualmente, simular un partido individual, simular el siguiente pendiente o completar todos los pendientes de una vez.
-
 ## 🥊 Eliminación directa
 
 Los dieciseisavos se crean después de confirmar los 32 clasificados. En ese momento la fase de grupos queda bloqueada para que el cuadro no cambie accidentalmente.
@@ -153,7 +167,7 @@ Emparejamientos base:
 
 Después, los ganadores avanzan automáticamente a octavos, cuartos, semifinales, partido por el tercer puesto y final. Al crear una nueva ronda, la anterior queda bloqueada para evitar que un cambio posterior rompa el cuadro.
 
-Los partidos pueden registrarse manualmente o simularse. Si el marcador termina empatado, debe existir un ganador por penales. El ganador por penales obtiene la victoria completa de `+2` y el eliminado recibe `-2`.
+Si el marcador termina empatado, debe existir un ganador por penales. El ganador por penales obtiene la victoria completa de `+2` y el eliminado recibe `-2`.
 
 Cuando terminan el tercer puesto y la final:
 
@@ -161,6 +175,7 @@ Cuando terminan el tercer puesto y la final:
 - Se guarda el subcampeón.
 - Se guarda el tercer lugar.
 - El campeón recibe una estrella adicional.
+- Se aplican los bonos de podio `+6 / +4 / +2`.
 
 ## 🎯 Sistema de predicciones
 
@@ -227,10 +242,12 @@ Estructura actual principal:
 Copa-Chigui/
 ├─ index.html
 ├─ css/
-│  └─ style.css
+│  ├─ style.css
+│  └─ mode.css
 ├─ js/
 │  ├─ teams.js
 │  ├─ tournament.js
+│  ├─ rules.js
 │  └─ app.js
 ├─ assets/
 │  └─ flags/
@@ -247,12 +264,14 @@ Copa-Chigui/
 5. ✅ Crear jornadas y tablas.
 6. ✅ Añadir resultados manuales y simulados.
 7. ✅ Crear eliminatorias completas hasta coronar campeón.
-8. 🚧 Implementar ranking mundial completo y cambios de posiciones.
-9. Implementar predicciones.
-10. Guardar historial y estadísticas completas.
-11. Añadir Chigui Coins y premios.
-12. Añadir modo Copa con amigos.
-13. Mejorar interfaz y animaciones.
+8. ✅ Añadir elección de modo manual o simulado por Copa.
+9. 🚧 Implementar ranking mundial completo y cambios de posiciones.
+10. Diseñar e implementar minijuego del modo simulado.
+11. Implementar predicciones.
+12. Guardar historial y estadísticas completas.
+13. Añadir Chigui Coins y premios.
+14. Añadir modo Copa con amigos.
+15. Mejorar interfaz y animaciones.
 
 ---
 
@@ -334,6 +353,18 @@ Copa-Chigui/
 - ✅ Pantalla final con el podio de la Copa.
 - ✅ Creada la carpeta `assets/flags/` para recibir las banderas reales del proyecto.
 
+## v0.0.7 — Modos de Copa y bonos de podio
+
+- ✅ Al comenzar una Copa se elige entre **modo manual** y **modo simulado**.
+- ✅ En modo manual se desactivan los controles de simulación.
+- ✅ En modo simulado se desactiva la edición manual de resultados.
+- ✅ El modo queda guardado dentro de la Copa.
+- ✅ Campeón recibe un bono adicional de `+6` puntos de fuerza/ranking.
+- ✅ Subcampeón recibe `+4` puntos.
+- ✅ Tercer lugar recibe `+2` puntos.
+- ✅ Los bonos se recalculan de forma segura si se corrige un resultado final.
+- 📝 Planeado un minijuego opcional para las Copas simuladas.
+
 ### Objetivo actual
 
-Probar el torneo completo de principio a fin y después construir el **Ranking Mundial Chigui** con posiciones, subidas/bajadas y cambios de puntos antes de integrar el sistema de predicciones.
+Construir el **Ranking Mundial Chigui** con posiciones, subidas/bajadas y cambios de puntos, y diseñar el primer minijuego del modo simulado antes de integrar por completo el sistema de predicciones.
