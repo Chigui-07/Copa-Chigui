@@ -1,7 +1,10 @@
 (function () {
   var STORAGE_KEY = "copaChigui.activeUniverse.v001";
   var tournamentScreen = document.getElementById("tournamentScreen");
-  if (!tournamentScreen) {
+  var setupScreen = document.getElementById("setupScreen");
+  var appShell = document.querySelector(".app-shell");
+
+  if (!tournamentScreen || !appShell) {
     return;
   }
 
@@ -24,6 +27,92 @@
     return element ? element.closest(".panel") : null;
   }
 
+  function getRoundMatches(cup, key) {
+    return cup && cup.knockout && Array.isArray(cup.knockout[key]) ? cup.knockout[key] : [];
+  }
+
+  function groupProgress(cup) {
+    var total = 0;
+    var completed = 0;
+    if (!cup || !Array.isArray(cup.groups)) {
+      return { completed: 0, total: 96, finished: false };
+    }
+    cup.groups.forEach(function (group) {
+      (group.matchdays || []).forEach(function (day) {
+        (day.matches || []).forEach(function (match) {
+          total += 1;
+          if (match.completed) {
+            completed += 1;
+          }
+        });
+      });
+    });
+    return { completed: completed, total: total || 96, finished: total > 0 && completed === total };
+  }
+
+  /* -----------------------------
+     MENÚ PRINCIPAL
+  ----------------------------- */
+
+  var mainMenu = document.createElement("section");
+  mainMenu.id = "mainMenuScreen";
+  mainMenu.className = "panel main-menu-screen";
+  mainMenu.innerHTML = "" +
+    "<div class=\"main-menu-heading\">" +
+      "<p class=\"eyebrow\">MENÚ PRINCIPAL</p>" +
+      "<h2>Copa Chigui</h2>" +
+      "<p class=\"muted\">Elige qué quieres hacer.</p>" +
+    "</div>" +
+    "<div class=\"main-menu-grid\">" +
+      "<button id=\"mainPlayButton\" class=\"main-menu-button main-menu-primary\" type=\"button\"><span class=\"main-menu-icon\">▶️</span><span><strong>Jugar</strong><small id=\"mainPlaySubtitle\">Comenzar una nueva historia</small></span></button>" +
+      "<button id=\"mainRankingButton\" class=\"main-menu-button\" type=\"button\"><span class=\"main-menu-icon\">📊</span><span><strong>Ranking Mundial</strong><small>Ver la clasificación del universo</small></span></button>" +
+      "<button class=\"main-menu-button\" type=\"button\" disabled><span class=\"main-menu-icon\">💾</span><span><strong>Partidas</strong><small>Varios universos · Próximamente</small></span></button>" +
+      "<button class=\"main-menu-button\" type=\"button\" disabled><span class=\"main-menu-icon\">🌐</span><span><strong>Multijugador online</strong><small>Salas privadas · Próximamente</small></span></button>" +
+      "<button class=\"main-menu-button\" type=\"button\" disabled><span class=\"main-menu-icon\">⚙️</span><span><strong>Ajustes</strong><small>Opciones del juego · Próximamente</small></span></button>" +
+    "</div>" +
+    "<p class=\"main-menu-version muted\">Prototipo en desarrollo</p>";
+
+  var hero = appShell.querySelector(".hero");
+  if (hero) {
+    hero.insertAdjacentElement("afterend", mainMenu);
+  } else {
+    appShell.insertBefore(mainMenu, appShell.firstChild);
+  }
+
+  var rankingReturnBar = document.createElement("section");
+  rankingReturnBar.className = "panel menu-return-bar navigation-hidden";
+  rankingReturnBar.innerHTML = "<button id=\"rankingBackToMenu\" class=\"secondary-button\" type=\"button\">← Menú principal</button><div><p class=\"eyebrow\">RANKING MUNDIAL</p><strong>Clasificación del universo</strong></div>";
+  tournamentScreen.insertAdjacentElement("beforebegin", rankingReturnBar);
+
+  function refreshMainMenu() {
+    var universe = readUniverse();
+    var playSubtitle = document.getElementById("mainPlaySubtitle");
+    var rankingButton = document.getElementById("mainRankingButton");
+    if (playSubtitle) {
+      playSubtitle.textContent = universe ? "Continuar " + (universe.name || "partida") : "Comenzar una nueva historia";
+    }
+    if (rankingButton) {
+      rankingButton.disabled = !universe;
+      rankingButton.title = universe ? "" : "Crea primero un universo";
+    }
+  }
+
+  function showMainMenu() {
+    document.body.classList.remove("main-ranking-view");
+    mainMenu.classList.remove("navigation-hidden");
+    rankingReturnBar.classList.add("navigation-hidden");
+    if (setupScreen) {
+      setupScreen.classList.add("navigation-hidden");
+    }
+    tournamentScreen.classList.add("navigation-hidden");
+    refreshMainMenu();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  /* -----------------------------
+     NAVEGACIÓN INTERNA DE LA COPA
+  ----------------------------- */
+
   var header = tournamentScreen.querySelector(".tournament-header");
   if (!header) {
     return;
@@ -36,12 +125,17 @@
   var buttonsWrap = document.createElement("div");
   buttonsWrap.className = "game-navigation-buttons";
 
+  var menuButton = document.createElement("button");
+  menuButton.type = "button";
+  menuButton.className = "game-nav-button game-nav-menu-button";
+  menuButton.textContent = "← Menú";
+  buttonsWrap.appendChild(menuButton);
+
   var views = [
     { key: "home", label: "🏠 Inicio" },
     { key: "cup", label: "🏅 Tabla de Copa" },
     { key: "groups", label: "📋 Grupos" },
-    { key: "knockout", label: "🏆 Eliminatorias" },
-    { key: "ranking", label: "📊 Ranking mundial" }
+    { key: "knockout", label: "🏆 Eliminatorias" }
   ];
 
   views.forEach(function (view) {
@@ -64,6 +158,7 @@
   nav.appendChild(buttonsWrap);
   header.insertAdjacentElement("afterend", nav);
 
+  /* Tabla general de la Copa */
   var cupTableSection = document.createElement("section");
   cupTableSection.id = "cupTableSection";
   cupTableSection.className = "panel";
@@ -79,12 +174,15 @@
     "</table></div>";
   nav.insertAdjacentElement("afterend", cupTableSection);
 
+  /* El antiguo panel de sorteo no forma parte del menú de juego. */
   var legacyDrawPanel = closestPanel("#groupsGrid");
   if (legacyDrawPanel) {
     legacyDrawPanel.classList.add("navigation-hidden");
     legacyDrawPanel.dataset.navigationLegacyDraw = "true";
   }
 
+  /* Cuadro eliminatorio progresivo. Conservamos los paneles originales
+     para no romper los botones/eventos que crea app.js. */
   var knockoutSections = [
     document.getElementById("roundOf32Section"),
     document.getElementById("roundOf16Section"),
@@ -94,22 +192,34 @@
     document.getElementById("championSection")
   ].filter(Boolean);
 
-  var bracketShell = document.createElement("div");
-  bracketShell.className = "knockout-bracket-shell";
+  var bracketShell = document.createElement("section");
+  bracketShell.id = "knockoutHub";
+  bracketShell.className = "knockout-hub";
+
+  var knockoutGate = document.createElement("div");
+  knockoutGate.className = "panel knockout-gate";
+  bracketShell.appendChild(knockoutGate);
+
+  var bracketTrack = document.createElement("div");
+  bracketTrack.className = "knockout-bracket-track";
+  bracketShell.appendChild(bracketTrack);
+
   if (knockoutSections.length) {
     knockoutSections[0].parentNode.insertBefore(bracketShell, knockoutSections[0]);
     knockoutSections.forEach(function (section) {
       section.classList.add("knockout-round-column");
-      bracketShell.appendChild(section);
+      bracketTrack.appendChild(section);
     });
+  } else {
+    cupTableSection.insertAdjacentElement("afterend", bracketShell);
   }
 
   var sections = {
     home: [document.querySelector(".host-card")],
     cup: [cupTableSection],
-    ranking: [document.getElementById("worldRankingSection")],
     groups: [closestPanel("#groupStageList"), document.getElementById("qualifiedSection")],
-    knockout: [bracketShell]
+    knockout: [bracketShell],
+    ranking: [document.getElementById("worldRankingSection")]
   };
 
   Object.keys(sections).forEach(function (key) {
@@ -120,13 +230,9 @@
   });
 
   var emptyState = document.createElement("section");
-  emptyState.className = "panel navigation-empty-state";
+  emptyState.className = "panel navigation-empty-state navigation-hidden";
   emptyState.innerHTML = "<div class=\"navigation-empty-icon\">🏟️</div><h2>Esta sección todavía no está disponible</h2><p class=\"muted\">Avanza en la Copa para desbloquear su contenido.</p>";
   cupTableSection.insertAdjacentElement("afterend", emptyState);
-
-  function getRoundMatches(cup, key) {
-    return cup && cup.knockout && Array.isArray(cup.knockout[key]) ? cup.knockout[key] : [];
-  }
 
   function participantInRound(cup, key, teamId) {
     return getRoundMatches(cup, key).some(function (match) {
@@ -234,8 +340,8 @@
     }
 
     cup.groups.forEach(function (group) {
-      group.matchdays.forEach(function (matchday) {
-        matchday.matches.forEach(function (match) {
+      (group.matchdays || []).forEach(function (matchday) {
+        (matchday.matches || []).forEach(function (match) {
           applyMatch(match, false);
         });
       });
@@ -255,8 +361,8 @@
   function cupSignature(cup) {
     var parts = [cup.championId || "", cup.runnerUpId || "", cup.thirdPlaceId || ""];
     cup.groups.forEach(function (group) {
-      group.matchdays.forEach(function (day) {
-        day.matches.forEach(function (match) {
+      (group.matchdays || []).forEach(function (day) {
+        (day.matches || []).forEach(function (match) {
           parts.push(match.id + ":" + (match.completed ? match.homeGoals + "-" + match.awayGoals : "x"));
         });
       });
@@ -325,7 +431,7 @@
       if (index < 3 && cup.completed) {
         tr.className = "cup-podium-row";
       }
-      var values = [
+      [
         String(index + 1),
         entry.flag + " " + entry.name,
         entry.stage.label,
@@ -335,8 +441,7 @@
         String(entry.losses),
         entry.gd > 0 ? "+" + entry.gd : String(entry.gd),
         String(entry.cupPoints)
-      ];
-      values.forEach(function (value, cellIndex) {
+      ].forEach(function (value, cellIndex) {
         var td = document.createElement("td");
         td.textContent = value;
         if (cellIndex === 1 || cellIndex === 2) {
@@ -351,13 +456,17 @@
     }
   }
 
+  /* -----------------------------
+     MODO MANUAL / SIMULADO
+  ----------------------------- */
+
   function applyModeVisibility() {
     var universe = readUniverse();
     if (!universe || !universe.cup) {
       return;
     }
     var simulated = universe.cup.mode !== "manual";
-    var simulateIds = [
+    [
       "simulateNextButton",
       "simulateAllButton",
       "simulateAllRoundOf32Button",
@@ -365,37 +474,87 @@
       "simulateAllQuarterfinalsButton",
       "simulateAllSemifinalsButton",
       "simulateAllFinalsButton"
-    ];
-
-    simulateIds.forEach(function (id) {
+    ].forEach(function (id) {
       var button = document.getElementById(id);
       if (button) {
         button.classList.toggle("mode-control-hidden", !simulated);
       }
     });
+
     document.querySelectorAll(".match-simulate-button").forEach(function (button) {
       button.classList.toggle("mode-control-hidden", !simulated);
     });
     document.querySelectorAll(".match-save-button").forEach(function (button) {
       button.classList.toggle("mode-control-hidden", simulated);
     });
+    document.body.classList.toggle("cup-mode-simulated", simulated);
+    document.body.classList.toggle("cup-mode-manual", !simulated);
   }
 
-  function knockoutHasContent() {
-    return knockoutSections.some(function (section) {
-      return !section.classList.contains("hidden");
-    });
-  }
+  /* -----------------------------
+     ELIMINATORIAS: ACCESO Y BLOQUEO
+  ----------------------------- */
 
-  function hasVisibleContent(key) {
-    if (key === "knockout") {
-      return knockoutHasContent();
+  var lastKnockoutGateSignature = "";
+
+  function refreshKnockoutGate() {
+    var universe = readUniverse();
+    if (!universe || !universe.cup) {
+      knockoutGate.innerHTML = "<p class=\"muted\">Crea una Copa para ver las eliminatorias.</p>";
+      knockoutGate.classList.remove("navigation-hidden");
+      bracketTrack.classList.add("navigation-hidden");
+      return;
     }
-    var list = sections[key] || [];
-    return list.some(function (section) {
-      return !section.classList.contains("hidden");
-    });
+
+    var cup = universe.cup;
+    var progress = groupProgress(cup);
+    var hasRoundOf32 = getRoundMatches(cup, "roundOf32").length > 0;
+    var signature = [progress.completed, progress.total, hasRoundOf32, cup.completed].join("|");
+
+    if (signature === lastKnockoutGateSignature) {
+      return;
+    }
+    lastKnockoutGateSignature = signature;
+
+    if (hasRoundOf32) {
+      knockoutGate.classList.add("navigation-hidden");
+      bracketTrack.classList.remove("navigation-hidden");
+      return;
+    }
+
+    bracketTrack.classList.add("navigation-hidden");
+    knockoutGate.classList.remove("navigation-hidden");
+
+    if (!progress.finished) {
+      knockoutGate.innerHTML = "" +
+        "<div class=\"navigation-empty-icon\">🔒</div>" +
+        "<p class=\"eyebrow\">ELIMINATORIAS BLOQUEADAS</p>" +
+        "<h2>Primero termina la fase de grupos</h2>" +
+        "<p class=\"muted\">Llevas " + progress.completed + " de " + progress.total + " partidos. Los dieciseisavos aparecerán aquí cuando existan 32 clasificados.</p>";
+      return;
+    }
+
+    knockoutGate.innerHTML = "" +
+      "<div class=\"navigation-empty-icon\">🏆</div>" +
+      "<p class=\"eyebrow\">32 CLASIFICADOS</p>" +
+      "<h2>Los dieciseisavos están listos</h2>" +
+      "<p class=\"muted\">Confirma los clasificados para abrir el cuadro. Después, cada ronda aparecerá únicamente cuando la anterior haya terminado.</p>" +
+      "<button id=\"knockoutStartButton\" class=\"primary-button\" type=\"button\">Crear dieciseisavos de final</button>";
+
+    var startButton = document.getElementById("knockoutStartButton");
+    if (startButton) {
+      startButton.addEventListener("click", function () {
+        var original = document.getElementById("createRoundOf32Button");
+        if (original) {
+          original.click();
+        }
+      });
+    }
   }
+
+  /* -----------------------------
+     CAMBIO DE VISTAS
+  ----------------------------- */
 
   function animateSection(section) {
     section.classList.remove("navigation-enter");
@@ -428,14 +587,79 @@
       button.setAttribute("aria-current", active ? "page" : "false");
     });
 
-    emptyState.classList.toggle("navigation-hidden", hasVisibleContent(key));
+    emptyState.classList.add("navigation-hidden");
+    if (key === "knockout") {
+      refreshKnockoutGate();
+    }
+    if (key === "cup") {
+      renderCupTable();
+    }
 
     try {
       sessionStorage.setItem("copaChigui.activeView", key);
     } catch (error) {
-      // La navegación sigue funcionando aunque sessionStorage no esté disponible.
+      // La navegación funciona aunque sessionStorage esté bloqueado.
     }
   }
+
+  function showGame() {
+    document.body.classList.remove("main-ranking-view");
+    mainMenu.classList.add("navigation-hidden");
+    rankingReturnBar.classList.add("navigation-hidden");
+    var universe = readUniverse();
+    if (universe) {
+      if (setupScreen) {
+        setupScreen.classList.add("navigation-hidden");
+      }
+      tournamentScreen.classList.remove("navigation-hidden");
+      setView("home");
+    } else {
+      tournamentScreen.classList.add("navigation-hidden");
+      if (setupScreen) {
+        setupScreen.classList.remove("navigation-hidden");
+        animateSection(setupScreen);
+      }
+    }
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function showRankingFromMenu() {
+    var universe = readUniverse();
+    if (!universe) {
+      return;
+    }
+    mainMenu.classList.add("navigation-hidden");
+    if (setupScreen) {
+      setupScreen.classList.add("navigation-hidden");
+    }
+    tournamentScreen.classList.remove("navigation-hidden");
+    rankingReturnBar.classList.remove("navigation-hidden");
+    document.body.classList.add("main-ranking-view");
+    setView("ranking");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  var universeForm = document.getElementById("newUniverseForm");
+  if (universeForm) {
+    universeForm.addEventListener("submit", function () {
+      window.setTimeout(function () {
+        mainMenu.classList.add("navigation-hidden");
+        rankingReturnBar.classList.add("navigation-hidden");
+        document.body.classList.remove("main-ranking-view");
+        if (setupScreen) {
+          setupScreen.classList.add("navigation-hidden");
+        }
+        tournamentScreen.classList.remove("navigation-hidden");
+        refreshInterface();
+        setView("home");
+      }, 0);
+    });
+  }
+
+  document.getElementById("mainPlayButton").addEventListener("click", showGame);
+  document.getElementById("mainRankingButton").addEventListener("click", showRankingFromMenu);
+  document.getElementById("rankingBackToMenu").addEventListener("click", showMainMenu);
+  menuButton.addEventListener("click", showMainMenu);
 
   nav.addEventListener("click", function (event) {
     var button = event.target.closest(".game-nav-button[data-view]");
@@ -445,6 +669,10 @@
     setView(button.dataset.view);
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
+
+  /* -----------------------------
+     ANIMACIÓN DE SIMULACIÓN
+  ----------------------------- */
 
   var simulationOverlay = document.createElement("div");
   simulationOverlay.className = "simulation-overlay navigation-hidden";
@@ -501,14 +729,12 @@
     message.textContent = "Los equipos salen al campo...";
     simulationOverlay.classList.remove("navigation-hidden");
 
-    var steps = [
-      { at: 350, minute: 18, width: 20, text: "El partido empieza a tomar ritmo." },
-      { at: 700, minute: 45, width: 50, text: "Descanso. Todo sigue abierto." },
-      { at: 1050, minute: 67, width: 74, text: "Entramos en el tramo decisivo." },
-      { at: 1400, minute: 90, width: 100, text: "Final del partido. Calculando resultado..." }
-    ];
-
-    steps.forEach(function (step) {
+    [
+      { at: 300, minute: 18, width: 20, text: "El partido empieza a tomar ritmo." },
+      { at: 650, minute: 45, width: 50, text: "Descanso. Todo sigue abierto." },
+      { at: 1000, minute: 67, width: 74, text: "Entramos en el tramo decisivo." },
+      { at: 1350, minute: 90, width: 100, text: "Final del partido. Revelando resultado..." }
+    ].forEach(function (step) {
       window.setTimeout(function () {
         clock.textContent = step.minute + "'";
         progress.style.width = step.width + "%";
@@ -525,7 +751,7 @@
         button.dataset.simulationBypass = "true";
       }
       button.click();
-    }, 1650);
+    }, 1600);
   }
 
   document.addEventListener("click", function (event) {
@@ -555,12 +781,15 @@
     runSimulationAnimation(button);
   }, true);
 
+  /* -----------------------------
+     ACTUALIZACIÓN AUTOMÁTICA
+  ----------------------------- */
+
   function refreshInterface() {
     renderCupTable();
     applyModeVisibility();
-    var active = nav.querySelector(".game-nav-button.active");
-    var key = active ? active.dataset.view : "home";
-    emptyState.classList.toggle("navigation-hidden", hasVisibleContent(key));
+    refreshKnockoutGate();
+    refreshMainMenu();
     if (legacyDrawPanel) {
       legacyDrawPanel.classList.add("navigation-hidden");
     }
@@ -584,14 +813,24 @@
   var initialView = "home";
   try {
     initialView = sessionStorage.getItem("copaChigui.activeView") || "home";
-    if (initialView === "draw") {
-      initialView = "cup";
+    if (initialView === "draw" || initialView === "ranking") {
+      initialView = "home";
     }
   } catch (error) {
     initialView = "home";
   }
 
+  window.CopaChiguiNavigation = {
+    setView: setView,
+    showMainMenu: showMainMenu,
+    showGame: showGame,
+    showRanking: showRankingFromMenu,
+    refresh: refreshInterface
+  };
+
   renderCupTable();
   applyModeVisibility();
+  refreshKnockoutGate();
   setView(initialView);
+  showMainMenu();
 }());
