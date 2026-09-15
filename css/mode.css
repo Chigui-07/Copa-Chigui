@@ -1,0 +1,44 @@
+.mode-select {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 13px 14px;
+  background: #0e1528;
+  color: var(--text);
+  outline: none;
+  font: inherit;
+}
+
+.mode-select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(89, 210, 139, 0.12);
+}
+
+.field-help {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.mode-banner {
+  display: inline-block;
+  margin-top: 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 7px 11px;
+  background: var(--panel-soft);
+  color: var(--accent);
+  font-size: 0.8rem;
+  font-weight: 900;
+}
+
+.podium-bonus-note {
+  margin-bottom: 0;
+  color: var(--accent);
+  font-weight: 900;
+}
+
+.mode-disabled-note {
+  color: var(--muted) !important;
+}
