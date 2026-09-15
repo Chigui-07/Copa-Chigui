@@ -68,6 +68,7 @@ window.COPA_CHIGUI_TEAMS = [
   { id: "ISR", name: "Israel", flag: "🇮🇱" },
   { id: "KSA", name: "Arabia Saudita", flag: "🇸🇦" },
   { id: "QAT", name: "Catar", flag: "🇶🇦" },
+  { id: "LBN", name: "Líbano", flag: "🇱🇧" },
 
   { id: "MAR", name: "Marruecos", flag: "🇲🇦" },
   { id: "ALG", name: "Argelia", flag: "🇩🇿" },
