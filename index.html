@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Copa Chigui</title>
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/mode.css">
 </head>
 <body>
   <main class="app-shell">
@@ -37,6 +38,15 @@
           <input id="universeName" type="text" maxlength="32" placeholder="Mi universo" required>
         </label>
 
+        <label class="full-width">
+          Modo de la Copa
+          <select id="cupMode" class="mode-select" required>
+            <option value="simulated" selected>🎮 Simulada — el juego genera los resultados</option>
+            <option value="manual">✍️ Manual — tú escribes todos los resultados</option>
+          </select>
+          <span class="field-help">El modo se fija al crear la Copa. En el modo simulado añadiremos un minijuego opcional para vivir los partidos.</span>
+        </label>
+
         <button class="primary-button full-width" type="submit">🎲 Crear Copa Chigui #1</button>
       </form>
     </section>
@@ -47,6 +57,7 @@
           <p class="eyebrow">COPA CHIGUI #1</p>
           <h2 id="universeTitle">Universo</h2>
           <p id="playersLabel" class="muted"></p>
+          <span id="cupModeBanner" class="mode-banner">Modo de Copa</span>
         </div>
         <button id="newDrawButton" class="secondary-button" type="button">🔄 Nuevo sorteo</button>
       </div>
@@ -76,7 +87,7 @@
           </div>
           <span id="groupProgressBadge" class="badge">0 / 96 partidos</span>
         </div>
-        <p class="muted">Puedes escribir resultados manualmente o dejar que el juego los simule. La selección ganadora recibe +2 puntos de ranking/fuerza, la perdedora -2 y el empate no modifica esos puntos.</p>
+        <p class="muted">La selección ganadora recibe +2 puntos de ranking/fuerza, la perdedora -2 y el empate no modifica esos puntos.</p>
 
         <div class="stage-actions">
           <button id="simulateNextButton" class="secondary-button" type="button">🎲 Simular siguiente</button>
@@ -170,7 +181,7 @@
           </div>
           <span id="finalsProgressBadge" class="badge">0 / 2 partidos</span>
         </div>
-        <p class="muted">Cuando ambos encuentros terminen, la Copa Chigui #1 tendrá su primer podio oficial y el campeón recibirá su primera estrella.</p>
+        <p class="muted">Al completar el podio se entregan bonos de fuerza/ranking: campeón +6, subcampeón +4 y tercer lugar +2.</p>
         <div class="stage-actions">
           <button id="simulateAllFinalsButton" class="primary-button" type="button">⚡ Simular partidos pendientes</button>
         </div>
@@ -186,12 +197,14 @@
         <span class="host-label">🏆 COPA CHIGUI #1 FINALIZADA</span>
         <div id="championDisplay" class="host-team"></div>
         <p id="podiumDisplay" class="muted"></p>
+        <p class="podium-bonus-note">🥇 +6 pts · 🥈 +4 pts · 🥉 +2 pts</p>
       </section>
     </section>
   </main>
 
   <script src="js/teams.js"></script>
   <script src="js/tournament.js"></script>
+  <script src="js/rules.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
