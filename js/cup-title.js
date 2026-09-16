@@ -30,24 +30,19 @@
     var fullTitle = titleFor(cup);
     document.title = fullTitle;
 
-    var eyebrow = document.querySelector(".tournament-header .eyebrow");
-    if (eyebrow) {
-      eyebrow.textContent = fullTitle.toUpperCase();
+    var universeTitle = document.getElementById("universeTitle");
+    if (universeTitle && universeTitle.textContent !== fullTitle) {
+      universeTitle.textContent = fullTitle;
+    }
+
+    var competitionTitle = document.querySelector(".competition-titlebar h2");
+    if (competitionTitle && competitionTitle.textContent !== fullTitle) {
+      competitionTitle.textContent = fullTitle;
     }
 
     var competitionEyebrow = document.querySelector(".competition-titlebar .eyebrow");
-    if (competitionEyebrow) {
-      competitionEyebrow.textContent = fullTitle.toUpperCase();
-    }
-
-    var subtitle = document.getElementById("competitionSubtitle");
-    if (subtitle) {
-      subtitle.textContent = fullTitle + " · " + (cup.mode === "manual" ? "Modo manual" : "Modo simulado");
-    }
-
-    var championLabel = document.querySelector("#championSection .host-label");
-    if (championLabel && cup.completed) {
-      championLabel.textContent = "🏆 " + fullTitle.toUpperCase() + " FINALIZADA";
+    if (competitionEyebrow && competitionEyebrow.textContent !== "COPA CHIGUI") {
+      competitionEyebrow.textContent = "COPA CHIGUI";
     }
 
     var hostCard = document.getElementById("hostDisplay");
